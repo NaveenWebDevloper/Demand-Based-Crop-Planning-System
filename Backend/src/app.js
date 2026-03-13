@@ -15,6 +15,8 @@ const configuredOrigins = [
     process.env.FRONTEND_URL,
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5174',
 ].filter(Boolean);
 
 const lanOriginPattern = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/;
@@ -30,6 +32,10 @@ app.use(cors({
     },
     credentials: true,
 }));
+// Root route
+app.get('/', (req, res) => {
+    res.json({ message: 'Demand-Based Crop Planning System API is running' });
+});
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
