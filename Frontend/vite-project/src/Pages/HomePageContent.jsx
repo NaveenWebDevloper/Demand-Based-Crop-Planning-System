@@ -194,7 +194,7 @@ const HomePageContent = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col relative overflow-hidden pt-24">
+    <div className="w-full min-h-screen flex flex-col relative overflow-hidden pt-24 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30">
       <Navbar />
 
       {/* Decorative Floating Elements with Real Images */}

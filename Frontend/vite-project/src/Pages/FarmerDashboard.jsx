@@ -4,12 +4,14 @@ import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import { apiUrl } from "../config/api";
+import { useLanguage } from "../Context/LanguageContext";
 
 const FarmerDashboard = () => {
   const [marketDemands, setMarketDemands] = useState([]);
   const [loadingDemands, setLoadingDemands] = useState(true);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchMarketDemands();
@@ -122,17 +124,17 @@ const FarmerDashboard = () => {
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
               <div>
                 <h1 className="text-3xl font-bold ios-title mb-2">
-                  Welcome, {user?.name}!
+                  {t("farmer.welcome")}, {user?.name}!
                 </h1>
                 <p className="ios-body text-gray-600">
-                  Manage your farm activities and crops
+                  {t("farmer.manageFarm")}
                 </p>
               </div>
               <button
                 onClick={handleLogout}
                 className="w-full sm:w-auto px-6 py-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-colors"
               >
-                Logout
+                {t("farmer.logout")}
               </button>
             </div>
           </div>
@@ -142,11 +144,11 @@ const FarmerDashboard = () => {
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900">
-                  Market Demand
+                  {t("farmer.marketDemand")}
                 </h2>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-slate-600 text-sm font-medium">
-                    Latest demand shared by admin
+                    {t("farmer.latestDemand")}
                   </p>
                   <span
                     className="relative inline-flex h-2 w-2"
@@ -161,17 +163,17 @@ const FarmerDashboard = () => {
                 onClick={fetchMarketDemands}
                 className="px-4 py-2 bg-green-400 text-slate-900 font-semibold rounded-lg"
               >
-                Refresh
+                {t("farmer.refresh")}
               </button>
             </div>
 
             {loadingDemands ? (
               <div className="py-10 text-center text-slate-500">
-                Loading market demand...
+                {t("farmer.loadingDemand")}
               </div>
             ) : marketDemands.length === 0 ? (
               <div className="py-10 text-center text-slate-500">
-                No market demand available right now.
+                {t("farmer.noDemand")}
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -190,7 +192,7 @@ const FarmerDashboard = () => {
                           />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center text-slate-400 text-sm">
-                            No image available
+                            {t("farmer.noImage")}
                           </div>
                         )}
                       </div>
@@ -206,25 +208,33 @@ const FarmerDashboard = () => {
 
                       <div className="grid grid-cols-2 gap-4 text-sm font-medium p-4 rounded-xl bg-slate-50 border border-slate-200">
                         <div>
-                          <p className="text-slate-500">Season</p>
+                          <p className="text-slate-500">
+                            {t("farmer.seasonLabel")}
+                          </p>
                           <div className="mt-1">
                             {getSeasonBadge(demand.season)}
                           </div>
                         </div>
                         <div>
-                          <p className="text-slate-500">Quantity</p>
+                          <p className="text-slate-500">
+                            {t("farmer.quantityLabel")}
+                          </p>
                           <p className="font-semibold text-slate-800">
                             {demand.quantity} {demand.quantityUnit || "kg"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-slate-500">Price Per Unit</p>
+                          <p className="text-slate-500">
+                            {t("farmer.pricePerUnit")}
+                          </p>
                           <p className="font-semibold text-slate-800">
                             {demand.price} / {demand.quantityUnit || "kg"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-slate-500">Region</p>
+                          <p className="text-slate-500">
+                            {t("farmer.regionLabel")}
+                          </p>
                           <p className="font-semibold text-slate-800">
                             {demand.region}
                           </p>
@@ -239,7 +249,7 @@ const FarmerDashboard = () => {
                         }
                         className="mt-5 w-full px-4 py-2.5 bg-green-400 text-slate-900 font-semibold rounded-lg"
                       >
-                        Estimate Revenue for This Crop
+                        {t("farmer.estimateRevenue")}
                       </button>
                     </div>
                   </article>
@@ -250,22 +260,30 @@ const FarmerDashboard = () => {
 
           {/* User Info */}
           <div className="glass-card rounded-2xl p-6 mt-8">
-            <h2 className="text-xl font-semibold mb-4">Account Information</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {t("farmer.accountInfo")}
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Name</p>
+                <p className="text-sm text-gray-500">{t("farmer.nameLabel")}</p>
                 <p className="font-semibold">{user?.name}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Email</p>
+                <p className="text-sm text-gray-500">
+                  {t("farmer.emailLabel")}
+                </p>
                 <p className="font-semibold">{user?.email}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Phone</p>
+                <p className="text-sm text-gray-500">
+                  {t("farmer.phoneLabel")}
+                </p>
                 <p className="font-semibold">{user?.phone}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Address</p>
+                <p className="text-sm text-gray-500">
+                  {t("farmer.addressLabel")}
+                </p>
                 <p className="font-semibold">{user?.address}</p>
               </div>
             </div>

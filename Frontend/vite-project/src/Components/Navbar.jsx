@@ -153,7 +153,7 @@ const Navbar = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="absolute top-[76px] left-3 right-3 sm:left-4 sm:right-4 md:hidden liquid-glass navbar-transparent rounded-2xl p-3">
+        <div className="absolute top-[76px] left-3 right-3 sm:left-4 sm:right-4 md:hidden liquid-glass navbar-transparent rounded-2xl p-3 z-40">
           <ul className="flex flex-col gap-1">
             <li>
               <Link to="/" onClick={closeMobileMenu} className={navLinkClass}>

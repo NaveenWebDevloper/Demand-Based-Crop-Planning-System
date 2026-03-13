@@ -4,6 +4,7 @@ import { useAuth } from "./Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import { apiUrl } from "./config/api";
+import { useLanguage } from "./Context/LanguageContext";
 
 const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
   });
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchData();
@@ -334,7 +336,7 @@ const AdminDashboard = () => {
                   Administration Panel
                 </p>
                 <h1 className="text-3xl font-bold ios-title mb-1 text-slate-900">
-                  Admin Dashboard
+                  {t("admin.title")}
                 </h1>
                 <p className="ios-body text-slate-600">
                   Welcome back, {user?.name}! Manage users and approvals.
@@ -345,7 +347,7 @@ const AdminDashboard = () => {
                   onClick={() => setActiveTab("market")}
                   className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-sm"
                 >
-                  View Market Demand
+                  {t("admin.marketDemands")}
                 </button>
                 <button
                   onClick={handleLogout}
@@ -377,7 +379,9 @@ const AdminDashboard = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Pending Approvals</p>
+                  <p className="text-sm text-gray-500">
+                    {t("admin.pendingUsers")}
+                  </p>
                   <p className="text-2xl font-bold">{pendingUsers.length}</p>
                 </div>
               </div>
@@ -401,7 +405,9 @@ const AdminDashboard = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Approved Users</p>
+                  <p className="text-sm text-gray-500">
+                    {t("admin.approvedUsers")}
+                  </p>
                   <p className="text-2xl font-bold">
                     {allUsers.filter((u) => u.status === "approved").length}
                   </p>
@@ -427,7 +433,7 @@ const AdminDashboard = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Total Users</p>
+                  <p className="text-sm text-gray-500">{t("admin.allUsers")}</p>
                   <p className="text-2xl font-bold">{allUsers.length}</p>
                 </div>
               </div>
@@ -445,7 +451,7 @@ const AdminDashboard = () => {
                     : "bg-transparent text-slate-600 hover:bg-white"
                 }`}
               >
-                Pending Approvals ({pendingUsers.length})
+                Pending {t("admin.pendingUsers")} ({pendingUsers.length})
               </button>
               <button
                 onClick={() => setActiveTab("all")}
@@ -455,7 +461,7 @@ const AdminDashboard = () => {
                     : "bg-transparent text-slate-600 hover:bg-white"
                 }`}
               >
-                All Users ({allUsers.length})
+                {t("admin.allUsers")} ({allUsers.length})
               </button>
               <button
                 onClick={() => setActiveTab("market")}
@@ -465,7 +471,7 @@ const AdminDashboard = () => {
                     : "bg-transparent text-slate-600 hover:bg-white"
                 }`}
               >
-                Market Demand ({marketDemands.length})
+                {t("admin.marketDemands")} ({marketDemands.length})
               </button>
             </div>
 
@@ -491,7 +497,7 @@ const AdminDashboard = () => {
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <p>No pending approvals</p>
+                      <p>{t("admin.noPendingUsers")}</p>
                     </div>
                   ) : (
                     <>
@@ -521,7 +527,7 @@ const AdminDashboard = () => {
                               >
                                 {actionLoading === pendingUser._id
                                   ? "..."
-                                  : "Approve"}
+                                  : t("admin.approve")}
                               </button>
                               <button
                                 onClick={() => handleReject(pendingUser._id)}
@@ -530,7 +536,7 @@ const AdminDashboard = () => {
                               >
                                 {actionLoading === pendingUser._id
                                   ? "..."
-                                  : "Reject"}
+                                  : t("admin.reject")}
                               </button>
                             </div>
                           </article>
@@ -542,19 +548,19 @@ const AdminDashboard = () => {
                           <thead>
                             <tr className="border-b border-slate-200 bg-slate-50/70">
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Name
+                                {t("admin.name")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Email
+                                {t("admin.email")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Phone
+                                {t("admin.phone")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Address
+                                {t("admin.address")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Actions
+                                {t("admin.actions")}
                               </th>
                             </tr>
                           </thead>
@@ -616,7 +622,7 @@ const AdminDashboard = () => {
                 ) : activeTab === "all" ? (
                   allUsers.length === 0 ? (
                     <div className="text-center py-12 text-gray-500">
-                      <p>No users found</p>
+                      <p>{t("admin.noUsers")}</p>
                     </div>
                   ) : (
                     <>
@@ -648,14 +654,14 @@ const AdminDashboard = () => {
                                     disabled={actionLoading === u._id}
                                     className="w-full px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 text-sm"
                                   >
-                                    Approve
+                                    {t("admin.approve")}
                                   </button>
                                   <button
                                     onClick={() => handleReject(u._id)}
                                     disabled={actionLoading === u._id}
                                     className="w-full px-3 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 text-sm"
                                   >
-                                    Reject
+                                    {t("admin.reject")}
                                   </button>
                                 </>
                               )}
@@ -665,7 +671,7 @@ const AdminDashboard = () => {
                                   disabled={actionLoading === u._id}
                                   className="w-full px-3 py-2 bg-green-400 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 text-sm"
                                 >
-                                  Approve
+                                  {t("admin.approve")}
                                 </button>
                               )}
                               <button
@@ -673,7 +679,7 @@ const AdminDashboard = () => {
                                 disabled={actionLoading === u._id}
                                 className="w-full px-3 py-2 bg-red-400 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 text-sm sm:col-span-2"
                               >
-                                Delete
+                                {t("admin.delete")}
                               </button>
                             </div>
                           </article>
@@ -685,19 +691,19 @@ const AdminDashboard = () => {
                           <thead>
                             <tr className="border-b border-slate-200 bg-slate-50/70">
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Name
+                                {t("admin.name")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Email
+                                {t("admin.email")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Phone
+                                {t("admin.phone")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Status
+                                {t("admin.status")}
                               </th>
                               <th className="text-left py-4 px-4 font-semibold text-slate-600">
-                                Actions
+                                {t("admin.actions")}
                               </th>
                             </tr>
                           </thead>

@@ -3,6 +3,7 @@ import Navbar from "../Components/Navbar";
 import shavigneshImage from "../assets/ShaVigneshImage.jpeg";
 import shivaImage from "../assets/ShivaImage.jpeg";
 import naveenImage from "../assets/myImage.jpeg";
+import yashwanthImage from "../assets/YashwanthImage.jpeg";
 import { useLanguage } from "../Context/LanguageContext";
 
 const AboutUsPage = () => {
@@ -115,7 +116,7 @@ const AboutUsPage = () => {
                   {/* Large Avatar */}
                   <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-2xl mb-6 overflow-hidden">
                     <img
-                      src=""
+                      src={yashwanthImage}
                       alt="Yashwanth"
                       className="w-full h-full object-cover"
                     />
