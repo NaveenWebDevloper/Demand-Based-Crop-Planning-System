@@ -49,8 +49,52 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
+/* Custom animations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 body {
@@ -93,15 +137,14 @@ body {
 
 .navbarButtons:hover,
 .navbarButtons:focus-visible {
-  background-color: rgba(255, 255, 255, 0.42);
-  border-color: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(14px) saturate(155%);
-  -webkit-backdrop-filter: blur(14px) saturate(155%);
+  background-color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow:
-    0 7px 18px rgba(15, 23, 42, 0.09),
-    inset 0 1px 2px rgba(255, 255, 255, 0.92),
-    inset 0 -1px 6px rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px) scale(1.02);
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 3px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 8px rgba(255, 255, 255, 0.4);
 }
 
 .navbarButtons:hover::before,
@@ -111,10 +154,17 @@ body {
 }
 
 .navbarButtons:active {
-  transform: translateY(0) scale(0.985);
+  transform: scale(0.96) !important;
   box-shadow:
-    0 3px 10px rgba(15, 23, 42, 0.1),
+    0 4px 12px rgba(15, 23, 42, 0.12),
     inset 0 1px 2px rgba(255, 255, 255, 0.72);
+}
+
+/* Magnetic Transition Smoother */
+.magnetic-item {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
 }
 
 /* iOS 26 Liquid Glass / Water Bubble Effect */

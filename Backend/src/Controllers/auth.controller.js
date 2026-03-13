@@ -13,7 +13,7 @@ const getCookieOptions = () => {
 };
 
 const registerUser = async (req, res) => {
-  const { name, email, phone, address, password } = req.body;
+  const { name, email, phone, address, password, profileImageUrl, profileImageId } = req.body;
     try {
         // Check if user already exists
         const existingUser = await UserModel.findOne({
@@ -28,8 +28,14 @@ const registerUser = async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-
-        
+        // Prepare profile image object if provided
+        const profileImageData = {};
+        if (profileImageUrl) {
+            profileImageData.url = profileImageUrl;
+        }
+        if (profileImageId) {
+            profileImageData.imageId = profileImageId;
+        }
 
         // Always set role as "farmer" and status as "pending" for regular registration
         const newUser = await UserModel.create({
@@ -39,18 +45,21 @@ const registerUser = async (req, res) => {
             address,
             password: hashedPassword,
             role: "farmer",
-            status: "pending"
+            status: "pending",
+            ...(Object.keys(profileImageData).length > 0 && { profileImage: profileImageData })
         });
 
         // Don't issue token on registration - user must wait for admin approval
         return res.status(201).json({
             message: "Registration successful. Please wait for admin approval before logging in.",
             user: {
+                id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
                 phone: newUser.phone,
                 address: newUser.address,
-                status: newUser.status
+                status: newUser.status,
+                profileImage: newUser.profileImage
             }
         });
 
@@ -115,7 +124,8 @@ const LoginUser = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 address: user.address,
-                role: user.role
+                role: user.role,
+                profileImage: user.profileImage
             }
         });
 
@@ -161,7 +171,8 @@ const getMe = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 address: user.address,
-                role: user.role
+                role: user.role,
+                profileImage: user.profileImage
             }
         });
     } catch (err) {

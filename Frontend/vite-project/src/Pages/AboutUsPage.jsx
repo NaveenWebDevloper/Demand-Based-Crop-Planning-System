@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "../Components/Navbar";
+import ProfileCard from "../Components/ProfileCard";
 import shavigneshImage from "../assets/ShaVigneshImage.jpeg";
 import shivaImage from "../assets/ShivaImage.jpeg";
 import naveenImage from "../assets/myImage.jpeg";
@@ -33,23 +34,13 @@ const AboutUsPage = () => {
             {/* Team Member 1 - Shavignesh (Left) with Quote */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
               <div className="w-full md:flex-1 md:flex md:justify-end">
-                <div className="p-4 sm:p-6 md:p-8 max-w-md md:max-w-md mx-auto flex flex-col items-center text-center">
-                  {/* Large Avatar */}
-                  <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-2xl mb-6 overflow-hidden">
-                    <img
-                      src={shavigneshImage}
-                      alt="Shavignesh"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-bold ios-title">Shavignesh</h3>
-                  <p className="ios-accent font-medium mt-1">
-                    {t("aboutUs.fullStackDeveloper")}
-                  </p>
-                  <p className="ios-body mt-3 text-sm">
-                    {t("aboutUs.scalableSolutions")}
-                  </p>
-                </div>
+                <ProfileCard
+                  name="Shavignesh"
+                  role={t("aboutUs.fullStackDeveloper")}
+                  description={t("aboutUs.scalableSolutions")}
+                  image={shavigneshImage}
+                  gradient="from-blue-400 to-indigo-500"
+                />
               </div>
 
               {/* Center Node */}
@@ -88,23 +79,13 @@ const AboutUsPage = () => {
 
               {/* Member Card */}
               <div className="w-full md:flex-1">
-                <div className="p-4 sm:p-6 md:p-8 max-w-md mx-auto flex flex-col items-center text-center">
-                  {/* Large Avatar */}
-                  <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center shadow-2xl mb-6 overflow-hidden">
-                    <img
-                      src={shivaImage}
-                      alt="Shiva"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-bold ios-title">Shiva</h3>
-                  <p className="ios-accent font-medium mt-1">
-                    {t("aboutUs.backendDeveloper")}
-                  </p>
-                  <p className="ios-body mt-3 text-sm">
-                    {t("aboutUs.apiExpert")}
-                  </p>
-                </div>
+                <ProfileCard
+                  name="Shiva"
+                  role={t("aboutUs.backendDeveloper")}
+                  description={t("aboutUs.apiExpert")}
+                  image={shivaImage}
+                  gradient="from-purple-400 to-pink-500"
+                />
               </div>
             </div>
 
@@ -112,23 +93,13 @@ const AboutUsPage = () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
               {/* Member Card */}
               <div className="w-full md:flex-1 md:flex md:justify-end">
-                <div className="p-4 sm:p-6 md:p-8 max-w-md mx-auto flex flex-col items-center text-center">
-                  {/* Large Avatar */}
-                  <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-2xl mb-6 overflow-hidden">
-                    <img
-                      src={yashwanthImage}
-                      alt="Yashwanth"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-bold ios-title">Yashwanth</h3>
-                  <p className="ios-accent font-medium mt-1">
-                    {t("aboutUs.frontendDeveloper")}
-                  </p>
-                  <p className="ios-body mt-3 text-sm">
-                    {t("aboutUs.beautifulUx")}
-                  </p>
-                </div>
+                <ProfileCard
+                  name="Yashwanth"
+                  role={t("aboutUs.frontendDeveloper")}
+                  description={t("aboutUs.beautifulUx")}
+                  image={yashwanthImage}
+                  gradient="from-orange-400 to-red-500"
+                />
               </div>
 
               {/* Center Node */}
@@ -166,23 +137,13 @@ const AboutUsPage = () => {
 
               {/* Member Card */}
               <div className="w-full md:flex-1">
-                <div className="p-4 sm:p-6 md:p-8 max-w-md mx-auto flex flex-col items-center text-center">
-                  {/* Large Avatar */}
-                  <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center shadow-2xl mb-6 overflow-hidden">
-                    <img
-                      src={naveenImage}
-                      alt="Naveen"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-bold ios-title">Naveen</h3>
-                  <p className="ios-accent font-medium mt-1">
-                    {t("aboutUs.mernDesigner")}
-                  </p>
-                  <p className="ios-body mt-3 text-sm">
-                    {t("aboutUs.seamlessExperience")}
-                  </p>
-                </div>
+                <ProfileCard
+                  name="Naveen"
+                  role={t("aboutUs.mernDesigner")}
+                  description={t("aboutUs.seamlessExperience")}
+                  image={naveenImage}
+                  gradient="from-teal-400 to-cyan-500"
+                />
               </div>
             </div>
           </div>

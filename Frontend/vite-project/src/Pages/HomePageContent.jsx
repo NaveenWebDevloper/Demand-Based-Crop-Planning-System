@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Navbar from "../Components/Navbar";
 import farmerImage from "../assets/farmer-black-img.png";
+import ScrollReveal from "../Components/ScrollReveal";
 import { useLanguage } from "../Context/LanguageContext";
 import { apiUrl } from "../config/api";
 
@@ -194,8 +195,9 @@ const HomePageContent = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col relative overflow-hidden pt-24 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30">
+    <>
       <Navbar />
+      <div className="w-full min-h-screen flex flex-col relative overflow-hidden pt-24 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30">
 
       {/* Decorative Floating Elements with Real Images */}
       <div className="hidden md:block absolute top-20 left-10 w-20 h-20 animate-orbit1 opacity-90">
@@ -286,89 +288,102 @@ const HomePageContent = () => {
 
       {/* Main Content */}
       <div className="w-full flex-1 flex items-center justify-center relative z-10 px-4 sm:px-6">
-        <div className="imageDiv w-full max-w-5xl flex flex-col items-center justify-center rounded-lg pb-8 md:pb-20">
-          <h1 className="md:hidden text-3xl sm:text-4xl font-bold text-center tracking-wide text-gray-700 px-2">
-            {t("home.title")}
-          </h1>
-          <h2 className="md:hidden text-lg sm:text-xl text-center mt-3 mb-6 font-bold text-green-500">
-            {t("home.subtitle")}
-          </h2>
-          <div className="md:hidden w-full max-w-2xl px-1 mb-5">
-            <div className="market-ticker-box">
-              <p className="market-ticker-title">
-                Government Controlled Live Market Data
-              </p>
-              <div className="text-[11px] sm:text-xs text-center text-green-900/85 font-medium mb-2">
-                <span>{marketStatusLabel}</span>
-                <span className="mx-2">|</span>
-                <span>Source: {marketFeedInfo.source}</span>
-                <span className="mx-2">|</span>
-                <span>Updated: {marketRefreshLabel}</span>
-              </div>
-              <p className="text-[11px] sm:text-xs text-center text-emerald-800 font-semibold mb-2 px-2">
-                {stateDataLabel}
-              </p>
-              <p
-                className={`text-[11px] sm:text-xs text-center font-semibold mb-2 px-2 ${
-                  marketFeedInfo.hasAndhraOrTelangana
-                    ? "text-emerald-700"
-                    : "text-rose-700"
-                }`}
-              >
-                {apTelanganaLabel}
-              </p>
-              <p className="text-[11px] sm:text-xs text-center text-amber-700 font-semibold mb-2 px-2">
-                Note: This is experimental data. Please verify rates before
-                cultivation decisions.
-              </p>
-              <div
-                className="market-ticker"
-                role="region"
-                aria-label="Government controlled live market data"
-              >
-                <div className="market-ticker-track">
-                  {scrollingMarketData.map((item, index) => (
-                    <span
-                      key={`${item.label}-${index}`}
-                      className="market-pill"
-                      style={{
-                        ...getMarketPillStyle(item.change),
-                        ...getHighlightStyle(item.state),
-                      }}
-                    >
-                      {item.label}
-                      {isAndhraOrTelangana(item.state) && (
-                        <span className="ml-1 text-amber-700 font-extrabold">
-                          [AP/TG]
+        <div className="imageDiv w-full max-w-5xl flex flex-col items-center justify-center rounded-lg pb-8 md:pb-20 pt-40 md:pt-0">
+          <ScrollReveal yOffset={30} duration={1.5}>
+            <h1 className="md:hidden text-3xl sm:text-4xl font-bold text-center tracking-wide text-gray-700 px-2">
+              {t("home.title")}
+            </h1>
+          </ScrollReveal>
+          
+          <ScrollReveal yOffset={20} duration={1.2} threshold={0.2}>
+            <h2 className="md:hidden text-lg sm:text-xl text-center mt-3 mb-6 font-bold text-green-500">
+              {t("home.subtitle")}
+            </h2>
+          </ScrollReveal>
+
+          <ScrollReveal threshold={0.1} yOffset={40}>
+            <div className="md:hidden w-full max-w-2xl px-1 mb-5">
+              <div className="market-ticker-box">
+                <p className="market-ticker-title">
+                  Government Controlled Live Market Data
+                </p>
+                <div className="text-[11px] sm:text-xs text-center text-green-900/85 font-medium mb-2">
+                  <span>{marketStatusLabel}</span>
+                  <span className="mx-2">|</span>
+                  <span>Source: {marketFeedInfo.source}</span>
+                  <span className="mx-2">|</span>
+                  <span>Updated: {marketRefreshLabel}</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-center text-emerald-800 font-semibold mb-2 px-2">
+                  {stateDataLabel}
+                </p>
+                <p
+                  className={`text-[11px] sm:text-xs text-center font-semibold mb-2 px-2 ${
+                    marketFeedInfo.hasAndhraOrTelangana
+                      ? "text-emerald-700"
+                      : "text-rose-700"
+                  }`}
+                >
+                  {apTelanganaLabel}
+                </p>
+                <p className="text-[11px] sm:text-xs text-center text-amber-700 font-semibold mb-2 px-2">
+                  Note: This is experimental data. Please verify rates before
+                  cultivation decisions.
+                </p>
+                <div
+                  className="market-ticker"
+                  role="region"
+                  aria-label="Government controlled live market data"
+                >
+                  <div className="market-ticker-track">
+                    {scrollingMarketData.map((item, index) => (
+                      <span
+                        key={`${item.label}-${index}`}
+                        className="market-pill"
+                        style={{
+                          ...getMarketPillStyle(item.change),
+                          ...getHighlightStyle(item.state),
+                        }}
+                      >
+                        {item.label}
+                        {isAndhraOrTelangana(item.state) && (
+                          <span className="ml-1 text-amber-700 font-extrabold">
+                            [AP/TG]
+                          </span>
+                        )}
+                        <span className="ml-1 font-bold">
+                          {item.change > 0
+                            ? `(+Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
+                            : item.change < 0
+                              ? `(-Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
+                              : "(Rs 0)"}
                         </span>
-                      )}
-                      <span className="ml-1 font-bold">
-                        {item.change > 0
-                          ? `(+Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
-                          : item.change < 0
-                            ? `(-Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
-                            : "(Rs 0)"}
                       </span>
-                    </span>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <img
-            className="w-full max-w-[900px] h-auto md:h-[500px] object-cover rounded-lg mb-4 md:mb-10 drop-shadow-2xl"
-            src={farmerImage}
-            alt="Farmer"
-          />
+          </ScrollReveal>
+
+          <ScrollReveal duration={2} blurStrength={10} baseOpacity={0}>
+            <img
+              className="w-full max-w-[900px] h-auto md:h-[500px] object-cover rounded-lg mb-4 md:mb-10 drop-shadow-2xl"
+              src={farmerImage}
+              alt="Farmer"
+            />
+          </ScrollReveal>
         </div>
-        <div className="heading-div hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/12 pt-10">
-          <h1 className="text-4xl font-bold text-center mt-28 tracking-wide mix-blend-color-dodge text-gray-600">
+
+        {/* Desktop Hero Content */}
+        <div className="heading-div hidden md:block absolute top-[80%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl pt-10">
+          <h1 className="text-4xl font-bold text-center tracking-wide mix-blend-color-dodge text-gray-600">
             {t("home.title")}
           </h1>
           <h2 className="text-xl text-center mt-4 font-bold text-green-500">
             {t("home.subtitle")}
           </h2>
-          <div className="w-[min(78vw,1000px)] mt-5">
+          <div className="w-[min(78vw,1000px)] mt-5 translate-x-4">
             <div className="market-ticker-box">
               <p className="market-ticker-title">
                 Government Controlled Live Market Data
@@ -435,6 +450,7 @@ const HomePageContent = () => {
 
       {/* Bottom Decorative Strip */}
     </div>
+    </>
   );
 };
 

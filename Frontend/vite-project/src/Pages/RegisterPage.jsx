@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Navbar from "../Components/Navbar";
+import ProfileImageUpload from "../Components/ProfileImageUpload";
+import ProfileCard from "../Components/ProfileCard";
 import { useLanguage } from "../Context/LanguageContext";
 import { apiUrl } from "../config/api";
 
@@ -13,6 +15,11 @@ const RegisterPage = () => {
     address: "",
     password: "",
   });
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [profileImageId, setProfileImageId] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [error, setError] = useState("");
@@ -22,15 +29,64 @@ const RegisterPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageSelect = (imageFile, imagePreview) => {
+    setProfileImage(imageFile);
+    setProfileImagePreview(imagePreview);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    
+    let currentImageUrl = profileImageUrl;
+    let currentImageId = profileImageId;
+
+    // If we have an image file but no URL yet, upload it first
+    if (!currentImageUrl && profileImage) {
+      setUploadingImage(true);
+      try {
+        const imageFormData = new FormData();
+        imageFormData.append("image", profileImage);
+
+        const response = await axios.post(apiUrl("/api/image/upload-pre-register"), imageFormData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        });
+
+        currentImageUrl = response.data.imageUrl;
+        currentImageId = response.data.imageId;
+        setProfileImageUrl(currentImageUrl);
+        setProfileImageId(currentImageId);
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        setError(err.response?.data?.message || t("register.imageUploadFailed") || "Failed to upload image. Please try again.");
+        setUploadingImage(false);
+        return;
+      }
+      setUploadingImage(false);
+    }
+
+    if (!currentImageUrl) {
+      setError(t("register.errorNoImage") || "Please upload or capture a profile photo");
+      return;
+    }
+
+    setUploadingImage(true); // Re-use loading state for registration
     try {
-      const response = await axios.post(apiUrl("/api/auth/register"), formData);
+      const registrationData = {
+        ...formData,
+        profileImageUrl: currentImageUrl,
+        profileImageId: currentImageId
+      };
+
+      const response = await axios.post(apiUrl("/api/auth/register"), registrationData);
       console.log("Register:", response.data);
       setIsRegistered(true);
     } catch (err) {
       setError(err.response?.data?.message || t("register.failed"));
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -130,17 +186,45 @@ const RegisterPage = () => {
                   <h1 className="text-2xl sm:text-3xl font-bold ios-title mb-2">
                     {t("register.createAccount")}
                   </h1>
-                  <p className="ios-body text-sm">{t("register.joinText")}</p>
+                  <p className="ios-body text-sm">
+                    {t("register.joinText")}
+                  </p>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Error Message */}
-                  {error && (
-                    <div className="px-4 py-3 rounded-2xl bg-red-50/80 border border-red-200/60 text-red-600 text-sm">
-                      {error}
+                <div className="flex flex-col">
+                  {/* Profile Image Section */}
+                  <div className="p-4 rounded-3xl bg-white/40 border border-white/60 backdrop-blur-sm">
+                    <ProfileImageUpload
+                      onImageSelect={handleImageSelect}
+                      previewImage={profileImagePreview}
+                      userName={formData.name || "Farmer"}
+                    />
+                  </div>
+
+                  {/* Profile Preview Card (Live) - Forced compact height */}
+                  {/* <div className="relative h-24 flex items-center justify-center transform scale-[0.6] opacity-0 animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
+                    <div className="absolute top-0 flex justify-center items-center">
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("register.preview") || "Profile Preview"}</h3>
                     </div>
-                  )}
+                    <div className="bg-white/30 rounded-[3rem] p-0.5 border border-white/40 shadow-inner flex justify-center overflow-hidden">
+                      <ProfileCard 
+                        name={formData.name || (t("register.yourName") || "Your Name")}
+                        role={t("register.farmerRole") || "Farmer"}
+                        description={formData.address || (t("register.yourAddress") || "Your Address will appear here")}
+                        image={profileImagePreview || profileImageUrl}
+                        className="-my-12"
+                      />
+                    </div>
+                  </div> */}
+
+                  {/* Form */}
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                      {/* Error Message */}
+                      {error && (
+                        <div className="px-4 py-3 rounded-2xl bg-red-50/80 border border-red-200/60 text-red-600 text-sm">
+                          {error}
+                        </div>
+                      )}
 
                   {/* Name Input */}
                   <div className="relative">
@@ -339,75 +423,27 @@ const RegisterPage = () => {
                     </div>
                   </div>
 
-                  {/* Confirm Password Input
-                  <div className="relative">
-                    <label className="block text-sm font-medium ios-subtitle mb-2 ml-1">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="••••••••"
-                        className="w-full px-5 py-3.5 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/60 focus:border-green-400/60 focus:ring-2 focus:ring-green-400/20 outline-none transition-all duration-300 ios-body placeholder:text-gray-400 shadow-sm pr-12"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        {showConfirmPassword ? (
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                            />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
-                  </div> */}
 
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold text-base shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-600 hover:to-emerald-600 transform hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
+                    disabled={uploadingImage}
+                    className="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold text-base shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-600 hover:to-emerald-600 transform hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {t("register.registerButton")}
+                    {uploadingImage ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>{t("register.processing") || "Processing..."}</span>
+                      </>
+                    ) : (
+                      t("register.registerButton")
+                    )}
                   </button>
                 </form>
+              </div>
 
                 {/* Login Link */}
                 <p className="text-center mt-6 ios-body text-sm">

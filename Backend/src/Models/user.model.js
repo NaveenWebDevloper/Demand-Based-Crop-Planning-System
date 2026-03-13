@@ -46,6 +46,17 @@ const userSchema = new mongoose.Schema(
     type: String,
     enum: ["pending", "approved", "rejected"],
     default: "pending"
+  },
+
+  profileImage: {
+    url: {
+      type: String,
+      default: null
+    },
+    imageId: {
+      type: String,
+      default: null
+    }
   }
 
 },

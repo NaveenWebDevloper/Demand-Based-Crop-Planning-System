@@ -7,6 +7,7 @@ import RegisterPage from "./Pages/RegisterPage";
 import AdminDashboard from "./AdminDashboard";
 import FarmerDashboard from "./Pages/FarmerDashboard";
 import RevenueGeneratePage from "./Pages/RevenueGeneratePage";
+import ProfilePage from "./Pages/ProfilePage";
 import { AuthProvider } from "./Context/AuthContext";
 import { LanguageProvider } from "./Context/LanguageContext";
 import ProtectedRoute from "./Components/ProtectedRoute";
@@ -45,6 +46,14 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={["farmer"]}>
                   <RevenueGeneratePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={["admin", "farmer"]}>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />

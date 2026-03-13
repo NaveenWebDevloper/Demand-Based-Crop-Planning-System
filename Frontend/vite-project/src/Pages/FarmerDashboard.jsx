@@ -5,6 +5,15 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import { apiUrl } from "../config/api";
 import { useLanguage } from "../Context/LanguageContext";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../Components/ui/carousel";
+import { Card, CardContent } from "../Components/ui/card";
+import ScrollReveal from "../Components/ScrollReveal";
 
 const FarmerDashboard = () => {
   const [marketDemands, setMarketDemands] = useState([]);
@@ -117,18 +126,44 @@ const FarmerDashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-24 pb-16 px-4 bg-gradient-to-br from-green-50/40 via-white to-emerald-50/40">
+      <div className="min-h-screen pt-24 pb-16 px-2 md:px-4 bg-gradient-to-br from-green-50/40 via-white to-emerald-50/40">
         <div className="max-w-7xl mx-auto">
           {/* Welcome Header */}
           <div className="glass-card rounded-3xl p-8 mb-8">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-              <div>
-                <h1 className="text-3xl font-bold ios-title mb-2">
-                  {t("farmer.welcome")}, {user?.name}!
-                </h1>
-                <p className="ios-body text-gray-600">
-                  {t("farmer.manageFarm")}
-                </p>
+              <div className="flex items-center gap-6">
+                {/* Profile Image */}
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 p-0.5 shadow-xl">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-white">
+                      {user?.profileImage?.url ? (
+                        <img 
+                          src={user.profileImage.url} 
+                          alt={user.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-green-600 bg-green-50">
+                          <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-green-500 border-2 border-white flex items-center justify-center shadow-lg">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                  </div>
+                </div>
+
+                <div>
+                  <h1 className="text-3xl font-bold ios-title mb-2">
+                    {t("farmer.welcome")}, {user?.name}!
+                  </h1>
+                  <p className="ios-body text-gray-600">
+                    {t("farmer.manageFarm")}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={handleLogout}
@@ -140,7 +175,7 @@ const FarmerDashboard = () => {
           </div>
 
           {/* Market Demand View */}
-          <div className="glass-card rounded-2xl p-6 md:p-8 mb-8">
+          <div className="glass-card rounded-2xl px-2 py-6 md:p-8 mb-8">
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900">
@@ -176,117 +211,87 @@ const FarmerDashboard = () => {
                 {t("farmer.noDemand")}
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {marketDemands.map((demand) => (
-                  <article
-                    key={demand._id}
-                    className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 p-1.5">
-                      <div className="h-60 md:h-64 rounded-lg overflow-hidden bg-slate-100">
-                        {demand.imageUrl ? (
-                          <img
-                            src={demand.imageUrl}
-                            alt={demand.crop}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center text-slate-400 text-sm">
-                            {t("farmer.noImage")}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="pt-5">
-                      <div className="flex items-center justify-between gap-3 mb-4">
-                        <h3 className="text-2xl font-bold text-slate-900">
-                          {demand.crop}
-                        </h3>
-                        {getSeasonBadge(demand.season)}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-sm font-medium p-4 rounded-xl bg-slate-50 border border-slate-200">
-                        <div>
-                          <p className="text-slate-500">
-                            {t("farmer.seasonLabel")}
-                          </p>
-                          <div className="mt-1">
-                            {getSeasonBadge(demand.season)}
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-slate-500">
-                            {t("farmer.quantityLabel")}
-                          </p>
-                          <p className="font-semibold text-slate-800">
-                            {demand.quantity} {demand.quantityUnit || "kg"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-slate-500">
-                            {t("farmer.pricePerUnit")}
-                          </p>
-                          <p className="font-semibold text-slate-800">
-                            {demand.price} / {demand.quantityUnit || "kg"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-slate-500">
-                            {t("farmer.regionLabel")}
-                          </p>
-                          <p className="font-semibold text-slate-800">
-                            {demand.region}
-                          </p>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          navigate("/farmer/revenue", {
-                            state: { demandId: demand._id },
-                          })
-                        }
-                        className="mt-5 w-full px-4 py-2.5 bg-green-400 text-slate-900 font-semibold rounded-lg"
+              <ScrollReveal yOffset={20} duration={1.2}>
+                <div className="w-full -mx-2 sm:mx-0 sm:px-4 md:px-12">
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full"
+                >
+                  <CarouselContent className="-ml-2 md:-ml-4">
+                    {marketDemands.map((demand) => (
+                      <CarouselItem 
+                        key={demand._id} 
+                        className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                       >
-                        {t("farmer.estimateRevenue")}
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
+                        <div className="p-1">
+                          <Card className="overflow-hidden border-slate-200 hover:shadow-lg transition-all duration-300 rounded-2xl group">
+                            <div className="relative h-48 overflow-hidden bg-slate-100">
+                              {demand.imageUrl ? (
+                                <img
+                                  src={demand.imageUrl}
+                                  alt={demand.crop}
+                                  className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center text-slate-400 text-xs">
+                                  {t("farmer.noImage")}
+                                </div>
+                              )}
+                              <div className="absolute top-3 right-3">
+                                {getSeasonBadge(demand.season)}
+                              </div>
+                            </div>
+                            <CardContent className="p-5">
+                              <h3 className="text-xl font-bold text-slate-900 mb-3 truncate">
+                                {demand.crop}
+                              </h3>
+                              
+                              <div className="space-y-2 mb-4">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-slate-500">{t("farmer.quantityLabel")}:</span>
+                                  <span className="font-semibold text-slate-800">
+                                    {demand.quantity} {demand.quantityUnit || "kg"}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-slate-500">{t("farmer.pricePerUnit")}:</span>
+                                  <span className="font-semibold text-slate-800">
+                                    ₹{demand.price}/{demand.quantityUnit || "kg"}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-slate-500">{t("farmer.regionLabel")}:</span>
+                                  <span className="font-semibold text-slate-800 truncate max-w-[120px]">
+                                    {demand.region}
+                                  </span>
+                                </div>
+                              </div>
 
-          {/* User Info */}
-          <div className="glass-card rounded-2xl p-6 mt-8">
-            <h2 className="text-xl font-semibold mb-4">
-              {t("farmer.accountInfo")}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-500">{t("farmer.nameLabel")}</p>
-                <p className="font-semibold">{user?.name}</p>
+                              <button
+                                onClick={() =>
+                                  navigate("/farmer/revenue", {
+                                    state: { demandId: demand._id },
+                                  })
+                                }
+                                className="w-full py-2 bg-green-400 hover:bg-green-300 text-gray-600 font-bold rounded-2xl transition-colors shadow-sm active:scale-95"
+                              >
+                                {t("farmer.estimateRevenue")}
+                              </button>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden md:flex -left-12" />
+                  <CarouselNext className="hidden md:flex -right-12" />
+                </Carousel>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">
-                  {t("farmer.emailLabel")}
-                </p>
-                <p className="font-semibold">{user?.email}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">
-                  {t("farmer.phoneLabel")}
-                </p>
-                <p className="font-semibold">{user?.phone}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">
-                  {t("farmer.addressLabel")}
-                </p>
-                <p className="font-semibold">{user?.address}</p>
-              </div>
-            </div>
+            </ScrollReveal>
+          )}
           </div>
         </div>
       </div>
