@@ -3,7 +3,7 @@ import Navbar from "../Components/Navbar";
 import shavigneshImage from "../assets/ShaVigneshImage.jpeg";
 import shivaImage from "../assets/ShivaImage.jpeg";
 import naveenImage from "../assets/myImage.jpeg";
-import yashwanthImage from "../assets/YashwanthImage.jpeg";
+import yashwanthImage from "../assets/yashwanthImage.jpeg";
 import { useLanguage } from "../Context/LanguageContext";
 
 const AboutUsPage = () => {
