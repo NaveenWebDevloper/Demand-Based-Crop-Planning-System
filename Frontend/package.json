@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@imagekit/react": "^5.0.2",
+    "@tailwindcss/vite": "^4.2.1",
+    "imagekitio-react": "^4.3.0",
+    "tailwindcss": "^4.2.1"
+  }
+}

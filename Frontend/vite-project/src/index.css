@@ -1,0 +1,405 @@
+@import "tailwindcss";
+
+/* iOS 26 Style Font */
+* {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Poppins', 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* iOS 26 Text Colors */
+.ios-title {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ios-subtitle {
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ios-body {
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+.ios-accent {
+  color: rgba(34, 197, 94, 0.9);
+  font-weight: 600;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* iOS 26 navbar water bubble interaction */
+.navbarButtons {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transform: translateZ(0);
+  transition:
+    background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms ease,
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-backdrop-filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navbarButtons::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.84);
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.38) 40%, rgba(255, 255, 255, 0.05) 70%);
+  transition:
+    opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navbarButtons:hover,
+.navbarButtons:focus-visible {
+  background-color: rgba(255, 255, 255, 0.42);
+  border-color: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(14px) saturate(155%);
+  -webkit-backdrop-filter: blur(14px) saturate(155%);
+  box-shadow:
+    0 7px 18px rgba(15, 23, 42, 0.09),
+    inset 0 1px 2px rgba(255, 255, 255, 0.92),
+    inset 0 -1px 6px rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.navbarButtons:hover::before,
+.navbarButtons:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.navbarButtons:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow:
+    0 3px 10px rgba(15, 23, 42, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.72);
+}
+
+/* iOS 26 Liquid Glass / Water Bubble Effect */
+.liquid-glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.25) 60%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.03),
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 6px rgba(255, 255, 255, 0.2),
+    inset 2px 0 3px rgba(255, 255, 255, 0.3),
+    inset -2px 0 3px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.liquid-glass:hover {
+  box-shadow: 
+    0 14px 50px rgba(0, 0, 0, 0.08),
+    0 6px 16px rgba(0, 0, 0, 0.04),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -2px 8px rgba(255, 255, 255, 0.3),
+    inset 2px 0 4px rgba(255, 255, 255, 0.4),
+    inset -2px 0 4px rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Top highlight - simulates light hitting bubble surface */
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 100px 100px 200px 200px;
+  pointer-events: none;
+}
+
+/* Bottom reflection - simulates light refraction */
+.liquid-glass::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 20%;
+  right: 20%;
+  height: 30%;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 200px 200px 100px 100px;
+  pointer-events: none;
+}
+
+/* Lighter transparent variant used by top navigation */
+.navbar-transparent {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.18) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.navbar-transparent::before {
+  opacity: 0.45;
+}
+
+.navbar-transparent::after {
+  opacity: 0.35;
+}
+
+/* iOS 26 Glass Card Effect */
+.glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 2px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 0 0 50% 50%;
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Green glass variant */
+.glass-card-green {
+  background: linear-gradient(
+    145deg,
+    rgba(34, 197, 94, 0.7) 0%,
+    rgba(22, 163, 74, 0.5) 50%,
+    rgba(34, 197, 94, 0.6) 100%
+  );
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(22, 163, 74, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 2px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-green::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 0 0 50% 50%;
+  pointer-events: none;
+}
+
+.glass-card-green:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 16px 48px rgba(22, 163, 74, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Orbital animations for floating fruits/vegetables */
+@keyframes orbit1 {
+  0% { transform: rotate(0deg) translateX(15px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(15px) rotate(-360deg); }
+}
+
+@keyframes orbit2 {
+  0% { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+  100% { transform: rotate(-360deg) translateX(20px) rotate(360deg); }
+}
+
+@keyframes orbit3 {
+  0% { transform: rotate(0deg) translateX(12px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(12px) rotate(-360deg); }
+}
+
+@keyframes orbit4 {
+  0% { transform: rotate(0deg) translateX(18px) rotate(0deg); }
+  100% { transform: rotate(-360deg) translateX(18px) rotate(360deg); }
+}
+
+@keyframes orbit5 {
+  0% { transform: rotate(0deg) translateX(10px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+}
+
+.animate-orbit1 {
+  animation: orbit1 16s linear infinite;
+}
+
+.animate-orbit2 {
+  animation: orbit2 20s linear infinite;
+}
+
+.animate-orbit3 {
+  animation: orbit3 24s linear infinite;
+}
+
+.animate-orbit4 {
+  animation: orbit4 18s linear infinite;
+}
+
+.animate-orbit5 {
+  animation: orbit5 22s linear infinite;
+}
+
+/* Government market ticker */
+.market-ticker-box {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  border-radius: 14px;
+  padding: 10px 10px 12px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.08);
+}
+
+.market-ticker-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(22, 101, 52, 0.95);
+  text-align: center;
+  letter-spacing: 0.04em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.market-ticker {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.market-ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  animation: marketTickerScroll 52s linear infinite;
+}
+
+.market-pill {
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(21, 128, 61, 0.96);
+  background: rgba(220, 252, 231, 0.85);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+@keyframes marketTickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
