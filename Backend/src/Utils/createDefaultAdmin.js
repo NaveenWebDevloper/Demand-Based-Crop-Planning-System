@@ -3,17 +3,29 @@ const bcrypt = require("bcryptjs");
 
 const createDefaultAdmin = async () => {
   try {
-    // Check if admin already exists
-    const adminExists = await UserModel.findOne({ email: "23uj1a6648@mrem.ac.in" });
+    // Check if admin already exists by email, name, or role
+    const adminExists = await UserModel.findOne({
+      $or: [
+        { email: "23uj1a6648@mrem.ac.in" },
+        { name: "Admin" },
+        { role: "admin" }
+      ]
+    });
     
     if (adminExists) {
-      // Update admin password to ensure it's correct
+      // Update admin credentials to ensure they are correct
       const hashedPassword = await bcrypt.hash("naveen", 10);
       await UserModel.updateOne(
-        { email: "23uj1a6648@mrem.ac.in" },
-        { password: hashedPassword, role: "admin", status: "approved" }
+        { _id: adminExists._id },
+        { 
+          email: "23uj1a6648@mrem.ac.in",
+          name: "Naveen",
+          password: hashedPassword, 
+          role: "admin", 
+          status: "approved" 
+        }
       );
-      console.log("✅ Default admin password updated");
+      console.log("✅ Default admin credentials updated");
       console.log("   Email: 23uj1a6648@mrem.ac.in");
       console.log("   Password: naveen");
       return;
