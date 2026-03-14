@@ -5,6 +5,9 @@ const UserModel = require('../Models/user.model');
 // Upload single image for market demand
 const uploadImage = async (req, res) => {
     try {
+        if (!imagekit) {
+            return res.status(500).json({ message: 'Image service not configured. Please set IMAGEKIT_* env variables.' });
+        }
         if (!req.file) {
             return res.status(400).json({ message: 'No file provided' });
         }
@@ -36,6 +39,9 @@ const uploadImage = async (req, res) => {
 // Upload profile image for user
 const uploadProfileImage = async (req, res) => {
     try {
+        if (!imagekit) {
+            return res.status(500).json({ message: 'Image service not configured. Please set IMAGEKIT_* env variables.' });
+        }
         if (!req.file) {
             return res.status(400).json({ message: 'No file provided' });
         }
@@ -95,6 +101,9 @@ const uploadProfileImage = async (req, res) => {
 // Upload profile image before registration
 const uploadPreRegisterImage = async (req, res) => {
     try {
+        if (!imagekit) {
+            return res.status(500).json({ message: 'Image service not configured. Please set IMAGEKIT_* env variables.' });
+        }
         if (!req.file) {
             return res.status(400).json({ message: 'No file provided' });
         }

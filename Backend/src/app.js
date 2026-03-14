@@ -17,21 +17,31 @@ const configuredOrigins = [
     'http://127.0.0.1:5173',
     'http://localhost:5174',
     'http://127.0.0.1:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5175',
 ].filter(Boolean);
 
+// Allow local LAN addresses and localhost on any port
 const lanOriginPattern = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/;
+const localhostPattern = /^https?:\/\/((localhost)|(127\.0\.0\.1))(\:\d+)?$/i;
 const vercelOriginPattern = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
 
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || configuredOrigins.includes(origin) || lanOriginPattern.test(origin) || vercelOriginPattern.test(origin)) {
-            return callback(null, true);
-        }
+// During development, allow all origins and echo the request Origin (helps local dev servers).
+if (process.env.NODE_ENV !== 'production') {
+    app.use(cors({ origin: true, credentials: true }));
+} else {
+    app.use(cors({
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            if (configuredOrigins.includes(origin) || lanOriginPattern.test(origin) || localhostPattern.test(origin) || vercelOriginPattern.test(origin)) {
+                return callback(null, true);
+            }
 
-        return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-}));
+            return callback(new Error(`CORS blocked for origin: ${origin}`));
+        },
+        credentials: true,
+    }));
+}
 // Root route
 app.get('/', (req, res) => {
     res.json({ message: 'Demand-Based Crop Planning System API is running' });
