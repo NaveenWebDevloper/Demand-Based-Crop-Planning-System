@@ -1,6 +1,7 @@
 const UserModel = require("../Models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const sendEmail = require("../Utils/sendEmail");
 
 const getCookieOptions = () => {
     const isProduction = process.env.NODE_ENV === "production";
@@ -48,6 +49,37 @@ const registerUser = async (req, res) => {
             status: "pending",
             ...(Object.keys(profileImageData).length > 0 && { profileImage: profileImageData })
         });
+
+        // Add asynchronous email notification to admin(s)
+        try {
+            const adminUsers = await UserModel.find({ role: "admin" }).select("email");
+            const adminEmails = adminUsers.map(admin => admin.email).join(",");
+            
+            if (adminEmails) {
+                const subject = "New Farmer Registration - Awaiting Approval";
+                const html = `
+                    <h3>New Farmer Registration Pending</h3>
+                    <p>A new farmer has registered and is waiting for your approval.</p>
+                    <ul>
+                        <li><strong>Name:</strong> ${newUser.name}</li>
+                        <li><strong>Email:</strong> ${newUser.email}</li>
+                        <li><strong>Phone:</strong> ${newUser.phone}</li>
+                        <li><strong>Address:</strong> ${newUser.address}</li>
+                    </ul>
+                    <br/>
+                    <p>Please login to the admin panel to review and approve the request.</p>
+                `;
+                
+                // Do not await this so it doesn't block the API response
+                sendEmail({
+                    to: adminEmails,
+                    subject,
+                    html
+                });
+            }
+        } catch (emailErr) {
+            console.error("Failed to notify admins via email:", emailErr.message);
+        }
 
         // Don't issue token on registration - user must wait for admin approval
         return res.status(201).json({
