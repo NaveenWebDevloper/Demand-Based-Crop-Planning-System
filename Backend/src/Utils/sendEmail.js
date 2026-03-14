@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const net = require('net');
 
 /**
  * Send an email
@@ -29,8 +30,15 @@ const sendEmail = async ({ to, subject, html }) => {
             return { success: true, simulated: true, info };
         }
 
+        // Build SMTP transport using explicit host/port to allow IPv4-only socket
+        const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+        const smtpPort = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+        const secure = smtpPort === 465;
+
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: smtpHost,
+            port: smtpPort,
+            secure,
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
@@ -42,6 +50,15 @@ const sendEmail = async ({ to, subject, html }) => {
             // Enable logging for Render logs
             debug: true,
             logger: true,
+            // Force SMTP connection sockets to use IPv4 (workaround for ENETUNREACH on IPv6-only environments)
+            getSocket: (options, callback) => {
+                try {
+                    const socket = net.connect({ host: options.host, port: options.port, family: 4 }, () => callback(null, socket));
+                    socket.on('error', (err) => callback(err));
+                } catch (err) {
+                    callback(err);
+                }
+            }
         });
 
         const info = await transporter.sendMail(mailOptions);
