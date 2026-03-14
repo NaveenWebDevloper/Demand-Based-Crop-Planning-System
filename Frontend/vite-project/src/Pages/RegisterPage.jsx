@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import ProfileImageUpload from "../Components/ProfileImageUpload";
-import ProfileCard from "../Components/ProfileCard";
 import { useLanguage } from "../Context/LanguageContext";
 import { apiUrl } from "../config/api";
 
@@ -21,7 +20,8 @@ const RegisterPage = () => {
   const [profileImageId, setProfileImageId] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [step, setStep] = useState("register"); // register, completed
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const { t } = useLanguage();
 
@@ -37,23 +37,27 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+    setMessage("");
+
+    if (step !== "register") return;
+
     let currentImageUrl = profileImageUrl;
     let currentImageId = profileImageId;
 
-    // If we have an image file but no URL yet, upload it first
     if (!currentImageUrl && profileImage) {
       setUploadingImage(true);
       try {
         const imageFormData = new FormData();
         imageFormData.append("image", profileImage);
 
-        const response = await axios.post(apiUrl("/api/image/upload-pre-register"), imageFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
+        const response = await axios.post(
+          apiUrl("/api/image/upload-pre-register"),
+          imageFormData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
           },
-          withCredentials: true,
-        });
+        );
 
         currentImageUrl = response.data.imageUrl;
         currentImageId = response.data.imageId;
@@ -61,7 +65,11 @@ const RegisterPage = () => {
         setProfileImageId(currentImageId);
       } catch (err) {
         console.error("Image upload failed:", err);
-        setError(err.response?.data?.message || t("register.imageUploadFailed") || "Failed to upload image. Please try again.");
+        setError(
+          err.response?.data?.message ||
+            t("register.imageUploadFailed") ||
+            "Failed to upload image. Please try again.",
+        );
         setUploadingImage(false);
         return;
       }
@@ -69,23 +77,33 @@ const RegisterPage = () => {
     }
 
     if (!currentImageUrl) {
-      setError(t("register.errorNoImage") || "Please upload or capture a profile photo");
+      setError(
+        t("register.errorNoImage") ||
+          "Please upload or capture a profile photo",
+      );
       return;
     }
 
-    setUploadingImage(true); // Re-use loading state for registration
+    setUploadingImage(true);
     try {
       const registrationData = {
         ...formData,
         profileImageUrl: currentImageUrl,
-        profileImageId: currentImageId
+        profileImageId: currentImageId,
       };
 
-      const response = await axios.post(apiUrl("/api/auth/register"), registrationData);
-      console.log("Register:", response.data);
-      setIsRegistered(true);
+      const response = await axios.post(
+        apiUrl("/api/auth/register"),
+        registrationData,
+      );
+      setMessage(response.data.message || "Registration successful! Your account is pending admin approval.");
+      setStep("completed");
     } catch (err) {
-      setError(err.response?.data?.message || t("register.failed"));
+      setError(
+        err.response?.data?.message ||
+          t("register.failed") ||
+          "Registration failed.",
+      );
     } finally {
       setUploadingImage(false);
     }
@@ -109,10 +127,8 @@ const RegisterPage = () => {
         <div className="relative z-10 w-full max-w-md">
           {/* Main Glass Card */}
           <div className="glass-card rounded-[24px] sm:rounded-[32px] p-6 sm:p-10 relative">
-            {/* Success Message */}
-            {isRegistered ? (
+            {step === "completed" ? (
               <div className="text-center py-8">
-                {/* Success Icon */}
                 <div className="flex justify-center mb-6">
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-xl">
                     <svg
@@ -131,34 +147,17 @@ const RegisterPage = () => {
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold ios-title mb-4">
-                  {t("register.successTitle")}
+                  Registration Received!
                 </h2>
                 <p className="ios-body text-base leading-relaxed mb-6">
-                  {t("register.successText")}
+                  {message ||
+                    "Registration successful. Admin approval is pending."}
                 </p>
-                <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-amber-50/80 border border-amber-200/60 mb-6">
-                  <svg
-                    className="w-5 h-5 text-amber-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="text-amber-700 text-sm font-medium">
-                    {t("register.pendingApproval")}
-                  </span>
-                </div>
                 <Link
                   to="/login"
                   className="inline-block w-full py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold text-base shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-600 hover:to-emerald-600 transform hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] text-center"
                 >
-                  {t("register.backToLogin")}
+                  Go to Login
                 </Link>
               </div>
             ) : (
@@ -187,9 +186,7 @@ const RegisterPage = () => {
                   <h1 className="text-2xl sm:text-3xl font-bold ios-title mb-2">
                     {t("register.createAccount")}
                   </h1>
-                  <p className="ios-body text-sm">
-                    {t("register.joinText")}
-                  </p>
+                  <p className="ios-body text-sm">{t("register.joinText")}</p>
                 </div>
 
                 <div className="flex flex-col">
@@ -208,6 +205,13 @@ const RegisterPage = () => {
                     {error && (
                       <div className="px-4 py-3 rounded-2xl bg-red-50/80 border border-red-200/60 text-red-600 text-sm">
                         {error}
+                      </div>
+                    )}
+
+                    {/* Info Message */}
+                    {message && (
+                      <div className="px-4 py-3 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 text-emerald-700 text-sm">
+                        {message}
                       </div>
                     )}
 
@@ -400,7 +404,7 @@ const RegisterPage = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={1.5}
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268-2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                               />
                             </svg>
                           )}
@@ -416,11 +420,28 @@ const RegisterPage = () => {
                     >
                       {uploadingImage ? (
                         <>
-                          <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <svg
+                            className="animate-spin h-5 w-5 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
                           </svg>
-                          <span>{t("register.processing") || "Processing..."}</span>
+                          <span>
+                            {t("register.processing") || "Processing..."}
+                          </span>
                         </>
                       ) : (
                         t("register.registerButton")

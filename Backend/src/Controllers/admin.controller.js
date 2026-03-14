@@ -40,7 +40,6 @@ const getAllUsers = async (req, res) => {
 const approveUser = async (req, res) => {
     try {
         const { userId } = req.params;
-
         const user = await UserModel.findById(userId);
 
         if (!user) {
@@ -57,8 +56,6 @@ const approveUser = async (req, res) => {
 
         user.status = "approved";
         await user.save();
-
-        // (Approval email removed)
 
         return res.status(200).json({
             message: "User approved successfully",
@@ -81,7 +78,6 @@ const approveUser = async (req, res) => {
 const rejectUser = async (req, res) => {
     try {
         const { userId } = req.params;
-
         const user = await UserModel.findById(userId);
 
         if (!user) {

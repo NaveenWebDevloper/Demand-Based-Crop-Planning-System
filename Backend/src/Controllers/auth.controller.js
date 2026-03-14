@@ -3,8 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const getCookieOptions = () => {
-    // Both Render and Vercel use HTTPS. 
-    // Since they are on completely different domains, cookies MUST have SameSite: 'none' and Secure: true.
     return {
         httpOnly: true,
         secure: true,
@@ -12,77 +10,63 @@ const getCookieOptions = () => {
     };
 };
 
+// ── Register ────────────────────────────────────────────────────────────────
 const registerUser = async (req, res) => {
   const { name, email, phone, address, password, profileImageUrl, profileImageId } = req.body;
-    try {
-        // Check if user already exists
-        const existingUser = await UserModel.findOne({
-            $or: [{ email }, { phone }]
-        });
-        if (existingUser) {
-            return res.status(400).json({
-                message: "User with this email or phone already exists",
-            });
-        }
+  try {
+    const existingUser = await UserModel.findOne({
+      $or: [{ email }, { phone }]
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email or phone already exists",
+      });
+    }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Prepare profile image object if provided
-        const profileImageData = {};
-        if (profileImageUrl) {
-            profileImageData.url = profileImageUrl;
-        }
-        if (profileImageId) {
-            profileImageData.imageId = profileImageId;
-        }
+    const profileImageData = {};
+    if (profileImageUrl) profileImageData.url = profileImageUrl;
+    if (profileImageId) profileImageData.imageId = profileImageId;
 
-        // Always set role as "farmer" and status as "pending" for regular registration
-        const newUser = await UserModel.create({
-            name,
-            email,
-            phone,
-            address,
-            password: hashedPassword,
-            role: "farmer",
-            status: "pending",
-            ...(Object.keys(profileImageData).length > 0 && { profileImage: profileImageData })
-        });
+    const newUser = await UserModel.create({
+      name,
+      email,
+      phone,
+      address,
+      password: hashedPassword,
+      role: "farmer",
+      status: "pending",
+      ...(Object.keys(profileImageData).length > 0 && { profileImage: profileImageData })
+    });
 
-        // (Email notifications removed)
-
-        // Don't issue token on registration - user must wait for admin approval
-        return res.status(201).json({
-            message: "Registration successful. Please wait for admin approval before logging in.",
-            user: {
-                id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                phone: newUser.phone,
-                address: newUser.address,
-                status: newUser.status,
-                profileImage: newUser.profileImage
-            }
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            message: "Error occurred while registering user",
-            error: err.message
-        });
-    }           
+    return res.status(201).json({
+      message: "Registration successful. Please wait for admin approval.",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+        status: newUser.status,
+        profileImage: newUser.profileImage
+      }
+    });
+  } catch (err) {
+    console.error("❌ Registration Error:", err);
+    return res.status(500).json({
+      message: "Error occurred while registering user",
+      error: err.message
+    });
+  }
 };
 
-// Login controller
-
+// ── Login ───────────────────────────────────────────────────────────────────
 const LoginUser = async (req, res) => {
-    // Always start from a clean auth cookie so stale sessions do not leak across logins.
     res.clearCookie("jwtToken", getCookieOptions());
 
     try {
         const { email, phone,  password } = req.body;
 
-        // Find user by email or phone and ensure password field is selected
         const user = await UserModel.findOne({
             $or: [{ email }, { phone }], 
         }).select("+password");
@@ -93,7 +77,6 @@ const LoginUser = async (req, res) => {
             });
         }
 
-        // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
@@ -102,7 +85,6 @@ const LoginUser = async (req, res) => {
             });
         }
 
-        // Check if user is approved by admin
         if (user.status === "pending") {
             return res.status(403).json({
                 message: "Your account is pending approval. Please wait for admin approval."
@@ -139,32 +121,20 @@ const LoginUser = async (req, res) => {
     }
 };
 
-// Logout controller
+// ── Logout ──────────────────────────────────────────────────────────────────
 const LogoutUser = (req, res) => {
     try {
         res.clearCookie("jwtToken", getCookieOptions());
-
-        return res.status(200).json({
-            message: "Logged out successfully"
-        });
+        return res.status(200).json({ message: "Logged out successfully" });
     } catch (err) {
-        return res.status(500).json({
-            message: "Error occurred while logging out",
-            error: err.message
-        });
+        return res.status(500).json({ message: "Error occurred while logging out", error: err.message });
     }
 };
 
-// Get current user
 const getMe = async (req, res) => {
     try {
         const user = await UserModel.findById(req.user.id);
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
+        if (!user) return res.status(404).json({ message: "User not found" });
 
         return res.status(200).json({
             user: {
@@ -178,10 +148,7 @@ const getMe = async (req, res) => {
             }
         });
     } catch (err) {
-        return res.status(500).json({
-            message: "Error fetching user",
-            error: err.message
-        });
+        return res.status(500).json({ message: "Error fetching user", error: err.message });
     }
 };
 
