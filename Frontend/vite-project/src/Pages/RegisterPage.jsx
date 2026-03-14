@@ -14,7 +14,10 @@ const RegisterPage = () => {
     phone: "",
     address: "",
     password: "",
+    otp: "",
   });
+  const [otpSent, setOtpSent] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profileImageUrl, setProfileImageUrl] = useState("");
@@ -33,6 +36,25 @@ const RegisterPage = () => {
     setProfileImage(imageFile);
     setProfileImagePreview(imagePreview);
   };
+
+  const handleSendOtp = async () => {
+    if (!formData.email) {
+      setError("Please enter your email first to receive the OTP.");
+      return;
+    }
+    setError("");
+    setSendingOtp(true);
+    try {
+      await axios.post(apiUrl("/api/auth/send-otp"), { email: formData.email });
+      setOtpSent(true);
+      setError(""); // clear generic errors
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to send OTP email.");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -264,33 +286,76 @@ const RegisterPage = () => {
                     <label className="block text-sm font-medium ios-subtitle mb-2 ml-1">
                       {t("register.emailAddress")}
                     </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder={t("register.emailPlaceholder")}
-                        className="w-full px-5 py-3.5 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/60 focus:border-green-400/60 focus:ring-2 focus:ring-green-400/20 outline-none transition-all duration-300 ios-body placeholder:text-gray-400 shadow-sm"
-                        required
-                      />
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                          />
-                        </svg>
+                    <div className="relative flex gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder={t("register.emailPlaceholder")}
+                          className="w-full px-5 py-3.5 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/60 focus:border-green-400/60 focus:ring-2 focus:ring-green-400/20 outline-none transition-all duration-300 ios-body placeholder:text-gray-400 shadow-sm"
+                          required
+                          disabled={otpSent}
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
                       </div>
+                      {!otpSent ? (
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={sendingOtp || !formData.email}
+                          className="px-4 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium text-sm shadow-md hover:shadow-lg disabled:opacity-50 transition-all flex items-center justify-center whitespace-nowrap"
+                        >
+                          {sendingOtp ? "Sending..." : "Send OTP"}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={sendingOtp}
+                          className="px-4 py-3.5 rounded-2xl bg-emerald-100 text-emerald-700 font-medium text-sm border border-emerald-200 transition-all hover:bg-emerald-200 flex items-center justify-center whitespace-nowrap"
+                        >
+                          Resend
+                        </button>
+                      )}
                     </div>
                   </div>
+
+                  {/* OTP Input (Visible only after sending OTP) */}
+                  {otpSent && (
+                    <div className="relative animate-fade-in-up">
+                      <label className="block text-sm font-medium ios-subtitle mb-2 ml-1 text-emerald-700">
+                        Email Verification Code (OTP)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="otp"
+                          value={formData.otp}
+                          onChange={handleChange}
+                          placeholder="Enter 6-digit OTP"
+                          maxLength="6"
+                          className="w-full px-5 py-3.5 rounded-2xl bg-emerald-50 backdrop-blur-sm border border-emerald-200 focus:border-green-400/60 focus:ring-2 focus:ring-green-400/20 outline-none transition-all duration-300 ios-body placeholder:text-gray-400 shadow-sm"
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Phone Number Input */}
                   <div className="relative">

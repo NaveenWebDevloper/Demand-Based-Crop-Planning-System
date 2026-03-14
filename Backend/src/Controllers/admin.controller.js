@@ -1,4 +1,5 @@
 const UserModel = require("../Models/user.model");
+const sendEmail = require("../Utils/sendEmail");
 
 // Get all pending users (for admin dashboard)
 const getPendingUsers = async (req, res) => {
@@ -57,6 +58,23 @@ const approveUser = async (req, res) => {
 
         user.status = "approved";
         await user.save();
+
+        // Send approval email to farmer (asynchronously)
+        if (user.email) {
+            const subject = "Account Approved - Crop Planning System";
+            const html = `
+                <h3>Congratulations, ${user.name}!</h3>
+                <p>Your account has been successfully approved by the admin.</p>
+                <p>You can now log in to the system to start planning your crops.</p>
+                <br/>
+                <p>Best regards,<br/>Demand-Based Crop Planning System</p>
+            `;
+            sendEmail({
+                to: user.email,
+                subject,
+                html
+            }).catch(err => console.error("Failed to send approval email:", err.message));
+        }
 
         return res.status(200).json({
             message: "User approved successfully",
