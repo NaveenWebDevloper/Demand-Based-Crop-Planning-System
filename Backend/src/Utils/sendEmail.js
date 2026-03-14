@@ -16,15 +16,23 @@ const sendEmail = async ({ to, subject, html }) => {
         const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST || "smtp.gmail.com",
             port: port,
-            secure: port === 465, // true for 465, false for other ports
+            secure: port === 465, // true for 465, false for 587
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
             },
-            // Add timeouts to prevent hanging on cloud platforms
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 10000,
-            socketTimeout: 15000,
+            tls: {
+                rejectUnauthorized: false, // Helps with some cloud network handshakes
+            },
+            // Explicitly require TLS for port 587
+            requireTLS: port === 587,
+            // Add timeouts to prevent hanging
+            connectionTimeout: 15000, 
+            greetingTimeout: 15000,
+            socketTimeout: 20000,
+            // Enable logging for Render logs
+            debug: true,
+            logger: true,
         });
 
         const mailOptions = {
