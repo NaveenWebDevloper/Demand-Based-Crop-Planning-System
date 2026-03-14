@@ -1,5 +1,4 @@
 const UserModel = require("../Models/user.model");
-const OTPModel = require("../Models/otp.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../Utils/sendEmail");
@@ -14,62 +13,9 @@ const getCookieOptions = () => {
     };
 };
 
-const sendOtp = async (req, res) => {
-    console.log("📩 Received OTP request for:", req.body.email);
-    try {
-        const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({ message: "Email is required" });
-        }
-
-        // Check if user already exists
-        const existingUser = await UserModel.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: "User with this email already exists" });
-        }
-
-        // Generate 6 digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        console.log(`Generated OTP: ${otp} for ${email}`);
-
-        // Save OTP to database (expires in 5 mins)
-        await OTPModel.deleteMany({ email }); // delete old ones
-        await OTPModel.create({ email, otp });
-
-        // Send OTP via email
-        const mailSent = await sendEmail({
-            to: email,
-            subject: "Your Email Verification OTP - Crop Planning System",
-            html: `
-                <h3>Email Verification</h3>
-                <p>Your OTP for email verification is: <strong>${otp}</strong></p>
-                <p>This code will expire in 5 minutes.</p>
-            `,
-        });
-
-        if (!mailSent || !mailSent.success) {
-            return res.status(500).json({ message: `Failed to send OTP email: ${mailSent.error || "Unknown server error"}` });
-        }
-
-        return res.status(200).json({ message: "OTP sent successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: "Error sending OTP", error: err.message });
-    }
-};
-
 const registerUser = async (req, res) => {
-  const { name, email, phone, address, password, profileImageUrl, profileImageId, otp } = req.body;
+  const { name, email, phone, address, password, profileImageUrl, profileImageId } = req.body;
     try {
-        if (!otp) {
-            return res.status(400).json({ message: "OTP is required for registration" });
-        }
-
-        // Verify OTP
-        const otpRecord = await OTPModel.findOne({ email, otp });
-        if (!otpRecord) {
-            return res.status(400).json({ message: "Invalid or expired OTP" });
-        }
-
         // Check if user already exists
         const existingUser = await UserModel.findOne({
             $or: [{ email }, { phone }]
@@ -103,9 +49,6 @@ const registerUser = async (req, res) => {
             status: "pending",
             ...(Object.keys(profileImageData).length > 0 && { profileImage: profileImageData })
         });
-
-        // Delete the used OTP
-        await OTPModel.deleteMany({ email });
 
         // Add asynchronous email notification to admin(s)
         try {
@@ -274,4 +217,4 @@ const getMe = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, LoginUser, LogoutUser, getMe, sendOtp };
+module.exports = { registerUser, LoginUser, LogoutUser, getMe };
