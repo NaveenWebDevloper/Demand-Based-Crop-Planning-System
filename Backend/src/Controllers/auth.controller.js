@@ -15,6 +15,7 @@ const getCookieOptions = () => {
 };
 
 const sendOtp = async (req, res) => {
+    console.log("📩 Received OTP request for:", req.body.email);
     try {
         const { email } = req.body;
         if (!email) {
@@ -29,6 +30,7 @@ const sendOtp = async (req, res) => {
 
         // Generate 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log(`Generated OTP: ${otp} for ${email}`);
 
         // Save OTP to database (expires in 5 mins)
         await OTPModel.deleteMany({ email }); // delete old ones
