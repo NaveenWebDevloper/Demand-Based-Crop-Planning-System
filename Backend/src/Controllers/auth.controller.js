@@ -5,12 +5,12 @@ const jwt = require("jsonwebtoken");
 const sendEmail = require("../Utils/sendEmail");
 
 const getCookieOptions = () => {
-    const isProduction = process.env.NODE_ENV === "production";
-
+    // Both Render and Vercel use HTTPS. 
+    // Since they are on completely different domains, cookies MUST have SameSite: 'none' and Secure: true.
     return {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "strict",
+        secure: true,
+        sameSite: "none",
     };
 };
 
