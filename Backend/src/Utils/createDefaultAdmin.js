@@ -4,27 +4,27 @@ const bcrypt = require("bcryptjs");
 const createDefaultAdmin = async () => {
   try {
     // Check if admin already exists
-    const adminExists = await UserModel.findOne({ email: "admin@cropplan.com" });
+    const adminExists = await UserModel.findOne({ email: "23uj1a6648@mrem.ac.in" });
     
     if (adminExists) {
       // Update admin password to ensure it's correct
-      const hashedPassword = await bcrypt.hash("admin123", 10);
+      const hashedPassword = await bcrypt.hash("naveen", 10);
       await UserModel.updateOne(
-        { email: "admin@cropplan.com" },
+        { email: "23uj1a6648@mrem.ac.in" },
         { password: hashedPassword, role: "admin", status: "approved" }
       );
       console.log("✅ Default admin password updated");
-      console.log("   Email: admin@cropplan.com");
-      console.log("   Password: admin123");
+      console.log("   Email: 23uj1a6648@mrem.ac.in");
+      console.log("   Password: naveen");
       return;
     }
 
     // Create default admin
-    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const hashedPassword = await bcrypt.hash("naveen", 10);
     
     const admin = await UserModel.create({
       name: "Admin",
-      email: "admin@cropplan.com",
+      email: "23uj1a6648@mrem.ac.in",
       phone: "9999999999",
       address: "CropPlan Headquarters",
       password: hashedPassword,
@@ -33,8 +33,8 @@ const createDefaultAdmin = async () => {
     });
 
     console.log("✅ Default admin created successfully");
-    console.log("   Email: admin@cropplan.com");
-    console.log("   Password: admin123");
+    console.log("   Email: 23uj1a6648@mrem.ac.in");
+    console.log("   Password: naveen");
     
   } catch (error) {
     console.error("❌ Error creating default admin:", error.message);
