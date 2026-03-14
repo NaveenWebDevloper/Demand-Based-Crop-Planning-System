@@ -73,6 +73,8 @@ const approveUser = async (req, res) => {
                 to: user.email,
                 subject,
                 html
+            }).then(result => {
+                if (!result.success) console.error("Failed to send approval email:", result.error);
             }).catch(err => console.error("Failed to send approval email:", err.message));
         }
 

@@ -45,8 +45,8 @@ const sendOtp = async (req, res) => {
             `,
         });
 
-        if (!mailSent) {
-            return res.status(500).json({ message: "Failed to send OTP email. Please try again later." });
+        if (!mailSent || !mailSent.success) {
+            return res.status(500).json({ message: `Failed to send OTP email: ${mailSent.error || "Unknown server error"}` });
         }
 
         return res.status(200).json({ message: "OTP sent successfully" });
@@ -125,12 +125,14 @@ const registerUser = async (req, res) => {
                     <p>Please login to the admin panel to review and approve the request.</p>
                 `;
                 
-                // Do not await this so it doesn't block the API response
-                sendEmail({
+                const emailResult = await sendEmail({
                     to: adminEmails,
                     subject,
                     html
                 });
+                if (!emailResult.success) {
+                    console.error("Failed to notify admins via email:", emailResult.error);
+                }
             }
         } catch (emailErr) {
             console.error("Failed to notify admins via email:", emailErr.message);
