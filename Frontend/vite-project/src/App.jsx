@@ -11,7 +11,6 @@ import ProfilePage from "./Pages/ProfilePage";
 import { AuthProvider } from "./Context/AuthContext";
 import { LanguageProvider } from "./Context/LanguageContext";
 import ProtectedRoute from "./Components/ProtectedRoute";
-import InstallPWA from "./Components/InstallPWA";
 import { Analytics } from "@vercel/analytics/react";
 
 const App = () => {
@@ -21,8 +20,6 @@ const App = () => {
         <AuthProvider>
           {/* Bottom fade shadow - Global */}
           <div className="hidden md:block fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-40"></div>
-          
-          <InstallPWA />
 
           <Routes>
             <Route path="/" element={<Home />} />
