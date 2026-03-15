@@ -29,6 +29,7 @@ const AdminDashboard = () => {
     price: "",
     imageUrl: "",
   });
+  const [editingMarketId, setEditingMarketId] = useState(null);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -121,19 +122,28 @@ const AdminDashboard = () => {
     try {
       const uploadedImageUrl = await uploadMarketImageToImageKit();
 
-      await axios.post(
-        apiUrl("/api/market/demand"),
-        {
-          ...marketForm,
-          imageUrl: uploadedImageUrl,
-        },
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      if (editingMarketId) {
+        await axios.put(
+          apiUrl(`/api/market/demand/${editingMarketId}`),
+          { ...marketForm, imageUrl: uploadedImageUrl },
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setMarketMessage("Market demand updated successfully.");
+      } else {
+        await axios.post(
+          apiUrl("/api/market/demand"),
+          { ...marketForm, imageUrl: uploadedImageUrl },
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setMarketMessage("Market demand added successfully.");
+      }
 
-      setMarketMessage("Market demand added successfully with uploaded image.");
       setMarketForm({
         crop: "",
         region: "",
@@ -144,6 +154,7 @@ const AdminDashboard = () => {
         price: "",
         imageUrl: "",
       });
+      setEditingMarketId(null);
       setSelectedMarketImage(null);
       setMarketImagePreview("");
       setFileInputKey((k) => k + 1);
@@ -152,10 +163,41 @@ const AdminDashboard = () => {
       setMarketMessage(
         error?.response?.data?.error ||
           error?.response?.data?.message ||
-          "Failed to add market demand.",
+          "Failed to process market demand."
       );
     } finally {
       setMarketSubmitLoading(false);
+    }
+  };
+
+  const handleEditMarket = (demand) => {
+    setMarketForm({
+       crop: demand.crop,
+       region: demand.region,
+       demandLevel: demand.demandLevel || "medium",
+       season: demand.season,
+       quantity: String(demand.quantity),
+       quantityUnit: demand.quantityUnit || 'kg',
+       price: String(demand.price),
+       imageUrl: demand.imageUrl || '',
+    });
+    setEditingMarketId(demand._id);
+    setSelectedMarketImage(null);
+    setMarketImagePreview("");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteMarket = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this market demand?")) return;
+    try {
+      await axios.delete(apiUrl(`/api/market/demand/${id}`), {
+        withCredentials: true,
+      });
+      await fetchMarketDemands();
+      setMarketMessage("Market demand deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting market demand:", error);
+      setMarketMessage("Failed to delete market demand.");
     }
   };
 
@@ -872,15 +914,31 @@ const AdminDashboard = () => {
                         )}
                       </div>
 
-                      <button
-                        type="submit"
-                        disabled={marketSubmitLoading}
-                        className="px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-60 md:col-span-2 font-medium shadow-sm"
-                      >
-                        {marketSubmitLoading
-                          ? "Submitting..."
-                          : "Add Market Demand"}
-                      </button>
+                      <div className="md:col-span-2 flex justify-between">
+                        <button
+                          type="submit"
+                          disabled={marketSubmitLoading}
+                          className="px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-60 font-medium shadow-sm"
+                        >
+                          {marketSubmitLoading
+                            ? "Submitting..."
+                            : editingMarketId ? "Update Market Demand" : "Add Market Demand"}
+                        </button>
+                        {editingMarketId && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingMarketId(null);
+                              setMarketForm({
+                                crop: "", region: "", demandLevel: "medium", season: "", quantity: "", quantityUnit: "kg", price: "", imageUrl: ""
+                              });
+                            }}
+                            className="px-4 py-2.5 bg-slate-400 text-white rounded-lg hover:bg-slate-500 font-medium shadow-sm"
+                          >
+                            Cancel Edit
+                          </button>
+                        )}
+                      </div>
 
                       {marketMessage && (
                         <p className="text-sm text-slate-700 md:col-span-2">
@@ -937,7 +995,7 @@ const AdminDashboard = () => {
                                 </p>
                               </div>
 
-                              <div className="mt-3">
+                              <div className="mt-3 flex items-center justify-between">
                                 {demand.imageUrl ? (
                                   <div className="flex items-center gap-3">
                                     <img
@@ -959,6 +1017,20 @@ const AdminDashboard = () => {
                                     No image
                                   </p>
                                 )}
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => handleEditMarket(demand)}
+                                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteMarket(demand._id)}
+                                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
                               </div>
                             </article>
                           ))}
@@ -988,6 +1060,9 @@ const AdminDashboard = () => {
                                 </th>
                                 <th className="text-left py-3 px-3 font-semibold text-slate-600">
                                   Image
+                                </th>
+                                <th className="text-left py-3 px-3 font-semibold text-slate-600">
+                                  Actions
                                 </th>
                               </tr>
                             </thead>
@@ -1037,6 +1112,22 @@ const AdminDashboard = () => {
                                     ) : (
                                       "N/A"
                                     )}
+                                  </td>
+                                  <td className="py-3 px-3">
+                                    <div className="flex gap-2">
+                                      <button
+                                        onClick={() => handleEditMarket(demand)}
+                                        className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteMarket(demand._id)}
+                                        className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))}

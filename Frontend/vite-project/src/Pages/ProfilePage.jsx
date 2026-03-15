@@ -1,12 +1,82 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../Context/AuthContext";
 import Navbar from "../Components/Navbar";
 import { useLanguage } from "../Context/LanguageContext";
 import ProfileCard from "../Components/ProfileCard";
+import axios from "axios";
+import { apiUrl } from "../config/api";
+import { UserPen, Save, X, Camera, Loader2, Mail, Phone, MapPin, User } from "lucide-react";
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, checkAuth } = useAuth();
   const { t } = useLanguage();
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+      });
+      setPreviewImage(user.profileImage?.url);
+    }
+  }, [user]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      let profileImage = null;
+
+      // Handle Image Upload if file selected
+      if (selectedFile) {
+        const imgData = new FormData();
+        imgData.append("image", selectedFile);
+        const uploadRes = await axios.post(apiUrl("/api/image/upload-pre-register"), imgData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        });
+        profileImage = {
+          url: uploadRes.data.imageUrl,
+          imageId: uploadRes.data.imageId,
+        };
+      }
+
+      await axios.put(
+        apiUrl("/api/auth/update-profile"),
+        { ...formData, ...(profileImage && { profileImage }) },
+        { withCredentials: true }
+      );
+
+      await checkAuth(); // Refresh user data
+      setIsEditing(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Update error:", error);
+      alert(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -33,7 +103,7 @@ const ProfilePage = () => {
                         name={user?.name || "Farmer Name"}
                         role={user?.role === 'farmer' ? (t("register.farmerRole") || "Farmer") : (t("nav.admin") || "Admin")}
                         description={user?.address || "Address info"}
-                        image={user?.profileImage?.url}
+                        image={isEditing ? previewImage : user?.profileImage?.url}
                         className="scale-95"
                     />
                 </div>
@@ -42,34 +112,128 @@ const ProfilePage = () => {
 
             {/* Right Column - Account Details */}
             <div className="md:col-span-12 lg:col-span-8 space-y-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                <div className="glass-card rounded-3xl p-8">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-1.5 h-8 bg-green-500 rounded-full"></div>
-                        <h2 className="text-2xl font-bold text-slate-900">{t("profile.personalDetails") || "Personal Information"}</h2>
+                <div className="glass-card rounded-3xl p-8 relative">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-8 bg-green-500 rounded-full"></div>
+                            <h2 className="text-2xl font-bold text-slate-900">{isEditing ? "Edit Personal Details" : (t("profile.personalDetails") || "Personal Information")}</h2>
+                        </div>
+                        {!isEditing && (
+                          <button 
+                            onClick={() => setIsEditing(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 font-bold rounded-xl hover:bg-green-100 transition-all border border-green-100 shadow-sm"
+                          >
+                            <UserPen size={18} />
+                            {t("Edit Profile") || "Edit Details"}
+                          </button>
+                        )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.nameLabel")}</p>
-                            <p className="text-xl font-semibold text-slate-800">{user?.name}</p>
+                    {isEditing ? (
+                      <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Photo Edit */}
+                        <div className="flex justify-center mb-8">
+                          <div className="relative">
+                            <img 
+                              src={previewImage || "/placeholder-user.png"} 
+                              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+                              alt="Profile"
+                            />
+                            <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors">
+                              <Camera size={14} className="text-white" />
+                              <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                            </label>
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.emailLabel")}</p>
-                            <p className="text-xl font-semibold text-slate-800 break-all">{user?.email}</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <div className="space-y-2">
+                             <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                               <User size={14} /> Name
+                             </label>
+                             <input 
+                               type="text" 
+                               value={formData.name}
+                               onChange={(e) => setFormData({...formData, name: e.target.value})}
+                               className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                               <Mail size={14} /> Email
+                             </label>
+                             <input 
+                               type="email" 
+                               value={formData.email}
+                               onChange={(e) => setFormData({...formData, email: e.target.value})}
+                               className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                               <Phone size={14} /> Phone
+                             </label>
+                             <input 
+                               type="tel" 
+                               value={formData.phone}
+                               onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                               className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                               <MapPin size={14} /> Mandle / Region
+                             </label>
+                             <input 
+                               type="text" 
+                               value={formData.address}
+                               onChange={(e) => setFormData({...formData, address: e.target.value})}
+                               className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                             />
+                           </div>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.phoneLabel")}</p>
-                            <p className="text-xl font-semibold text-slate-800">{user?.phone}</p>
+
+                        <div className="flex items-center gap-4 pt-4">
+                          <button 
+                            type="submit"
+                            disabled={loading}
+                            className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                          >
+                            {loading ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> Save Changes</>}
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => setIsEditing(false)}
+                            className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-2xl transition-all"
+                          >
+                            Cancel
+                          </button>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.roleLabel") || "Account Role"}</p>
-                            <p className="text-xl font-semibold text-green-600 capitalize">{user?.role}</p>
-                        </div>
-                        <div className="md:col-span-2 space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.addressLabel")}</p>
-                            <p className="text-xl font-semibold text-slate-800 leading-relaxed">{user?.address}</p>
-                        </div>
-                    </div>
+                      </form>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.nameLabel")}</p>
+                              <p className="text-xl font-semibold text-slate-800">{user?.name}</p>
+                          </div>
+                          <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.emailLabel")}</p>
+                              <p className="text-xl font-semibold text-slate-800 break-all">{user?.email}</p>
+                          </div>
+                          <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.phoneLabel")}</p>
+                              <p className="text-xl font-semibold text-slate-800">{user?.phone}</p>
+                          </div>
+                          <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.roleLabel") || "Account Role"}</p>
+                              <p className="text-xl font-semibold text-green-600 capitalize">{user?.role}</p>
+                          </div>
+                          <div className="md:col-span-2 space-y-1">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.addressLabel")}</p>
+                              <p className="text-xl font-semibold text-slate-800 leading-relaxed">{user?.address}</p>
+                          </div>
+                      </div>
+                    )}
                 </div>
 
                 {/* Account Status */}

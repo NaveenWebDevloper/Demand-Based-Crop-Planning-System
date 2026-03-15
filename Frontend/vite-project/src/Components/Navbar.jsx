@@ -66,7 +66,7 @@ const Navbar = () => {
 
   return (
     <div className="fixed inset-x-0 top-0 flex flex-col items-center z-50 pointer-events-none pt-4 sm:pt-6">
-      <div className="liquid-glass navbar-transparent w-[92%] max-w-4xl min-h-[56px] flex items-center justify-between px-5 sm:px-8 gap-4 rounded-[32px] sm:rounded-[100px] pointer-events-auto">
+      <div className="liquid-glass w-[92%] max-w-4xl min-h-[56px] flex items-center justify-between px-5 sm:px-8 gap-4 rounded-[32px] sm:rounded-[100px] pointer-events-auto">
         <MagneticWrapper strength={0.15}>
           <Link to="/" className="flex items-center gap-2 relative z-10 transition-transform hover:scale-105 active:scale-95">
             <svg
@@ -193,7 +193,7 @@ const Navbar = () => {
                   type="button"
                   aria-label={t("nav.switchLanguage")}
                   onClick={cycleLanguage}
-                  className="navbarButtons text-gray-700/90 hover:text-gray-900 font-semibold px-4 py-2 rounded-full border border-white/45 bg-white/20"
+                  className="navbarButtons text-gray-700/90 hover:text-gray-900 font-semibold px-4 py-2 rounded-full"
                   title={t("nav.switchLanguage")}
                 >
                   {t("nav.language")}: {languageShortCode[language]}
@@ -243,7 +243,7 @@ const Navbar = () => {
             className="w-full max-w-6xl mt-3 md:hidden pointer-events-auto animate-fade-in-down"
             onClick={(e) => e.stopPropagation()}
           >
-          <div className="liquid-glass rounded-[2rem] p-4 shadow-2xl overflow-hidden w-[92%] mx-auto bg-white/40 backdrop-blur-[60px] border border-white/50">
+          <div className="liquid-glass rounded-[2rem] p-4 w-[92%] mx-auto">
           <ul className="flex flex-col gap-1">
             <li>
               <Link to="/" onClick={closeMobileMenu} className={navLinkClass}>
@@ -300,7 +300,7 @@ const Navbar = () => {
                   type="button"
                   aria-label={t("nav.switchLanguage")}
                   onClick={cycleLanguage}
-                  className="flex-grow text-left navbarButtons text-gray-700/90 hover:text-gray-900 font-semibold px-4 py-2 rounded-full border border-white/45 bg-white/20"
+                  className="flex-grow text-left navbarButtons text-gray-700/90 hover:text-gray-900 font-semibold px-4 py-2 rounded-full"
                 >
                   {t("nav.language")}: {languageShortCode[language]}
                 </button>

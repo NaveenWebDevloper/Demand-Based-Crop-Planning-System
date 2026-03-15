@@ -14,6 +14,7 @@ import {
 } from "../Components/ui/carousel";
 import { Card, CardContent } from "../Components/ui/card";
 import ScrollReveal from "../Components/ScrollReveal";
+import { UserPen } from "lucide-react";
 
 const FarmerDashboard = () => {
   const [marketDemands, setMarketDemands] = useState([]);
@@ -160,9 +161,16 @@ const FarmerDashboard = () => {
                   <h1 className="text-3xl font-bold ios-title mb-2">
                     {t("farmer.welcome")}, {user?.name}!
                   </h1>
-                  <p className="ios-body text-gray-600">
+                  <p className="ios-body text-gray-600 mb-4">
                     {t("farmer.manageFarm")}
                   </p>
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="px-4 py-2 bg-green-100 text-green-600 font-bold rounded-xl flex items-center gap-2 hover:bg-green-200 transition-all active:scale-95 shadow-sm border border-green-200"
+                  >
+                    <UserPen className="w-4 h-4" />
+                    {t("Edit Profile") || "Edit Details"}
+                  </button>
                 </div>
               </div>
               <button

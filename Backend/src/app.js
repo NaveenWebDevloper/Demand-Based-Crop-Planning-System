@@ -3,6 +3,7 @@ const authRoutes = require('./Routes/auth.Routes');
 const adminRoutes = require('./Routes/admin.Routes');
 const marketDemandRoutes = require('./Routes/Marketdemand.Routes');
 const imageRoutes = require('./Routes/image.Routes');
+const weatherRoutes = require('./Routes/weather.Routes');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
@@ -53,5 +54,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/market', marketDemandRoutes);
 app.use('/api/image', imageRoutes);
+app.use('/api/weather', weatherRoutes);
 
 module.exports = app;

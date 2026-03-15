@@ -4,6 +4,7 @@ import farmerImage from "../assets/farmer-black-img.png";
 import ScrollReveal from "../Components/ScrollReveal";
 import { useLanguage } from "../Context/LanguageContext";
 import { apiUrl } from "../config/api";
+import { CloudRain, Wind, MapPin, ThermometerSun, Loader2 } from "lucide-react";
 
 const HomePageContent = () => {
   const { t } = useLanguage();
@@ -48,6 +49,10 @@ const HomePageContent = () => {
     hasStateData: false,
     hasAndhraOrTelangana: false,
   });
+
+  const [weatherData, setWeatherData] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [locationError, setLocationError] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -123,6 +128,47 @@ const HomePageContent = () => {
 
     fetchLiveGovtData();
     const intervalId = setInterval(fetchLiveGovtData, 60000);
+
+    // Weather & Location Logic
+    const fetchWeather = async (lat, lon) => {
+      setWeatherLoading(true);
+      try {
+        const response = await fetch(apiUrl(`/api/weather?lat=${lat}&lon=${lon}`));
+        const data = await response.json();
+        if (data.success) {
+          setWeatherData(data.data);
+          setLocationError(null);
+        } else {
+          throw new Error(data.message || "Failed to fetch");
+        }
+      } catch (error) {
+        console.error("Weather fetch failed:", error);
+        setLocationError("Could not retrieve weather data.");
+      } finally {
+        setWeatherLoading(false);
+      }
+    };
+
+    const detectLocation = () => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            fetchWeather(position.coords.latitude, position.coords.longitude);
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            setLocationError("Please enable location access to see local weather.");
+            setWeatherLoading(false);
+          },
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 }
+        );
+      } else {
+        setLocationError("Geolocation not supported by your browser.");
+        setWeatherLoading(false);
+      }
+    };
+
+    detectLocation();
 
     return () => {
       controller.abort();
@@ -287,169 +333,154 @@ const HomePageContent = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full flex-1 flex items-center justify-center relative z-10 px-4 sm:px-6">
-        <div className="imageDiv w-full max-w-5xl flex flex-col items-center justify-center rounded-lg pb-8 md:pb-20 pt-40 md:pt-0">
-          <ScrollReveal yOffset={30} duration={1.5}>
-            <h1 className="md:hidden text-3xl sm:text-4xl font-bold text-center tracking-wide text-gray-700 px-2">
-              {t("home.title")}
-            </h1>
-          </ScrollReveal>
-          
-          <ScrollReveal yOffset={20} duration={1.2} threshold={0.2}>
-            <h2 className="md:hidden text-lg sm:text-xl text-center mt-3 mb-6 font-bold text-green-500">
-              {t("home.subtitle")}
-            </h2>
-          </ScrollReveal>
-
-          <ScrollReveal threshold={0.1} yOffset={40}>
-            <div className="md:hidden w-full max-w-2xl px-1 mb-5">
-              <div className="market-ticker-box">
-                <p className="market-ticker-title">
-                  Government Controlled Live Market Data
-                </p>
-                <div className="text-[11px] sm:text-xs text-center text-green-900/85 font-medium mb-2">
-                  <span>{marketStatusLabel}</span>
-                  <span className="mx-2">|</span>
-                  <span>Source: {marketFeedInfo.source}</span>
-                  <span className="mx-2">|</span>
-                  <span>Updated: {marketRefreshLabel}</span>
-                </div>
-                <p className="text-[11px] sm:text-xs text-center text-emerald-800 font-semibold mb-2 px-2">
-                  {stateDataLabel}
-                </p>
-                <p
-                  className={`text-[11px] sm:text-xs text-center font-semibold mb-2 px-2 ${
-                    marketFeedInfo.hasAndhraOrTelangana
-                      ? "text-emerald-700"
-                      : "text-rose-700"
-                  }`}
-                >
-                  {apTelanganaLabel}
-                </p>
-                <p className="text-[11px] sm:text-xs text-center text-amber-700 font-semibold mb-2 px-2">
-                  Note: This is experimental data. Please verify rates before
-                  cultivation decisions.
-                </p>
-                <div
-                  className="market-ticker"
-                  role="region"
-                  aria-label="Government controlled live market data"
-                >
-                  <div className="market-ticker-track">
-                    {scrollingMarketData.map((item, index) => (
-                      <span
-                        key={`${item.label}-${index}`}
-                        className="market-pill"
-                        style={{
-                          ...getMarketPillStyle(item.change),
-                          ...getHighlightStyle(item.state),
-                        }}
-                      >
-                        {item.label}
-                        {isAndhraOrTelangana(item.state) && (
-                          <span className="ml-1 text-amber-700 font-extrabold">
-                            [AP/TG]
-                          </span>
-                        )}
-                        <span className="ml-1 font-bold">
-                          {item.change > 0
-                            ? `(+Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
-                            : item.change < 0
-                              ? `(-Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
-                              : "(Rs 0)"}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+        <div className="w-full flex-1 flex items-center justify-center relative z-10 px-4 sm:px-6 pt-10 md:pt-0">
+          <ScrollReveal duration={1.5} blurStrength={0} baseOpacity={0}>
+            <div className="relative flex justify-center items-center group">
+              {/* Subtle back-glow for the image */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-emerald-100/20 blur-[100px] rounded-full -z-10" />
+              
+              <img
+                className="w-full max-w-[800px] h-auto md:max-h-[500px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.15)]"
+                src={farmerImage}
+                alt="Farmer"
+              />
             </div>
-          </ScrollReveal>
-
-          <ScrollReveal duration={2} blurStrength={10} baseOpacity={0}>
-            <img
-              className="w-full max-w-[900px] h-auto md:h-[500px] object-cover rounded-lg mb-4 md:mb-10 drop-shadow-2xl"
-              src={farmerImage}
-              alt="Farmer"
-            />
           </ScrollReveal>
         </div>
 
-        {/* Desktop Hero Content */}
-        <div className="heading-div hidden md:block absolute top-[80%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl pt-10">
-          <h1 className="text-4xl font-bold text-center tracking-wide mix-blend-color-dodge text-gray-600">
-            {t("home.title")}
-          </h1>
-          <h2 className="text-xl text-center mt-4 font-bold text-green-500">
-            {t("home.subtitle")}
-          </h2>
-          <div className="w-[min(78vw,1000px)] mt-5 translate-x-4">
-            <div className="market-ticker-box">
-              <p className="market-ticker-title">
-                Government Controlled Live Market Data
-              </p>
-              <div className="text-xs text-center text-green-900/85 font-medium mb-2">
-                <span>{marketStatusLabel}</span>
-                <span className="mx-2">|</span>
-                <span>Source: {marketFeedInfo.source}</span>
-                <span className="mx-2">|</span>
-                <span>Updated: {marketRefreshLabel}</span>
-              </div>
-              <p className="text-xs text-center text-emerald-800 font-semibold mb-2 px-2">
-                {stateDataLabel}
-              </p>
-              <p
-                className={`text-xs text-center font-semibold mb-2 px-2 ${
-                  marketFeedInfo.hasAndhraOrTelangana
-                    ? "text-emerald-700"
-                    : "text-rose-700"
-                }`}
-              >
-                {apTelanganaLabel}
-              </p>
-              <p className="text-xs text-center text-amber-700 font-semibold mb-2 px-2">
-                Note: This is experimental data. Please verify rates before
-                cultivation decisions.
-              </p>
-              <div
-                className="market-ticker"
-                role="region"
-                aria-label="Government controlled live market data"
-              >
-                <div className="market-ticker-track">
-                  {scrollingMarketData.map((item, index) => (
-                    <span
-                      key={`${item.label}-${index}`}
-                      className="market-pill"
-                      style={{
-                        ...getMarketPillStyle(item.change),
-                        ...getHighlightStyle(item.state),
-                      }}
-                    >
-                      {item.label}
-                      {isAndhraOrTelangana(item.state) && (
-                        <span className="ml-1 text-amber-700 font-extrabold">
-                          [AP/TG]
+        {/* Unified Hero Dashboard (Both Mobile & Desktop Optimized) */}
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 relative z-30 -mt-10 md:-mt-20">
+          <ScrollReveal yOffset={30} threshold={0.1}>
+            <div className="flex flex-col items-center">
+               {/* Desktop Only Titles (now in flow) */}
+               <div className="hidden md:block text-center mb-10">
+                  <h1 className="text-5xl lg:text-6xl font-black text-slate-800 tracking-tight mb-4">
+                    {t("home.title")}
+                  </h1>
+                  <h2 className="text-2xl font-bold text-emerald-600">
+                    {t("home.subtitle")}
+                  </h2>
+               </div>
+
+               {/* Weather Widget Dashboard */}
+               <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  {/* Local Weather Highlights */}
+                  <div className="md:col-span-1 bg-[#0f172a]/85 backdrop-blur-xl p-6 md:p-8 rounded-[35px] flex flex-col justify-center items-center text-center shadow-2xl border border-white/10">
+                    {weatherLoading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="animate-spin text-emerald-500" size={32} />
+                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Checking...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="p-3 bg-amber-500/10 rounded-2xl mb-3 border border-amber-500/20">
+                          <ThermometerSun size={32} className="text-amber-400" />
+                        </div>
+                        <div className="text-4xl font-black text-white tracking-tighter">
+                          {weatherData?.temp || "--"}°C
+                        </div>
+                        <div className="text-[10px] font-black text-emerald-400 mt-2 px-2.5 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 uppercase tracking-tighter">
+                          {weatherData?.condition || "Syncing..."}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Detailed Insights & Location */}
+                  <div className="md:col-span-3 bg-[#0f172a]/85 backdrop-blur-xl p-6 md:p-8 rounded-[35px] flex flex-col md:flex-row items-center justify-between shadow-2xl gap-6 border border-white/10">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                      <div className="flex items-center gap-2 text-slate-300 font-extrabold text-[11px] uppercase tracking-widest mb-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <MapPin size={16} className="text-emerald-400" />
+                        <span>Live Area: <span className="text-white border-b-2 border-emerald-400/30">{weatherData?.location || "Nearby Farm"}</span></span>
+                      </div>
+                      <p className="text-sm md:text-base text-slate-300 font-bold max-w-sm leading-relaxed">
+                        Localized weather insights for smarter <span className="text-emerald-400">Crop Planning</span> and harvest precision.
+                      </p>
+                    </div>
+                    
+                    <div className="flex gap-10 md:pr-4">
+                        <div className="flex flex-col items-center">
+                          <div className="p-3.5 bg-blue-500/10 rounded-2xl mb-2 border border-blue-500/20">
+                            <CloudRain size={26} className="text-blue-400" />
+                          </div>
+                          <div className="text-xl font-black text-white">{weatherData?.humidity || "--"}%</div>
+                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Humidity</div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="p-3.5 bg-teal-500/10 rounded-2xl mb-2 border border-teal-500/20">
+                            <Wind size={26} className="text-teal-400" />
+                          </div>
+                          <div className="text-xl font-black text-white">{weatherData?.windSpeed || "--"} <span className="text-[10px] font-bold text-slate-400">m/s</span></div>
+                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Wind</div>
+                        </div>
+                    </div>
+                  </div>
+               </div>
+
+               {/* Government Market Ticker Section (Enhanced) */}
+               <div className="w-full liquid-glass rounded-[35px] p-6 md:p-8 shadow-2xl border border-emerald-500/10">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1.5 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-100">
+                        <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Live Market Watch</span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-[10px] md:text-xs font-bold text-emerald-800/70 text-center uppercase tracking-wider flex items-center gap-3 bg-white/40 px-4 py-2 rounded-full border border-emerald-100">
+                      <span>{marketStatusLabel}</span>
+                      <span className="opacity-30">|</span>
+                      <span>{marketFeedInfo.source}</span>
+                      <span className="opacity-30">|</span>
+                      <span>Updated: {marketRefreshLabel}</span>
+                    </div>
+                  </div>
+
+                  {/* The Ticker Track */}
+                  <div className="w-full overflow-hidden bg-gradient-to-r from-emerald-50/50 via-white/40 to-emerald-50/50 rounded-2xl border border-white/60 py-5 shadow-inner">
+                    <div className="market-ticker-track">
+                      {scrollingMarketData.map((item, index) => (
+                        <span
+                          key={`${item.label}-${index}`}
+                          className="market-pill !bg-white/80 !border-white/90 shadow-sm"
+                          style={{
+                            ...getMarketPillStyle(item.change),
+                            ...getHighlightStyle(item.state),
+                          }}
+                        >
+                          {item.label}
+                          {isAndhraOrTelangana(item.state) && (
+                            <span className="ml-1 text-amber-700 font-extrabold text-[10px]">
+                              [AP/TG]
+                            </span>
+                          )}
+                          <span className="ml-2 font-black text-sm">
+                            {item.change > 0
+                              ? `(+₹${Math.abs(item.change).toLocaleString("en-IN")})`
+                              : item.change < 0
+                                ? `(-₹${Math.abs(item.change).toLocaleString("en-IN")})`
+                                : ""}
+                          </span>
                         </span>
-                      )}
-                      <span className="ml-1 font-bold">
-                        {item.change > 0
-                          ? `(+Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
-                          : item.change < 0
-                            ? `(-Rs ${Math.abs(item.change).toLocaleString("en-IN")})`
-                            : "(Rs 0)"}
-                      </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex flex-wrap justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span className="flex items-center gap-1.5 border-r border-slate-200 pr-4">{stateDataLabel}</span>
+                    <span className={`flex items-center gap-1.5 ${marketFeedInfo.hasAndhraOrTelangana ? "text-amber-600" : "text-slate-400"}`}>
+                       Regional Insights: {marketFeedInfo.hasAndhraOrTelangana ? "Enabled" : "Syncing..."}
                     </span>
-                  ))}
-                </div>
-              </div>
+                  </div>
+
+                  <p className="mt-4 text-center text-[10px] font-bold text-slate-400 bg-slate-50 py-2 rounded-xl border border-slate-100 italic">
+                    Note: This is experimental data. Please verify current mandi rates before making cultivation decisions.
+                  </p>
+               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
-
-      {/* Bottom Decorative Strip */}
-    </div>
     </>
   );
 };

@@ -3,16 +3,19 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const getCookieOptions = () => {
+    const isProduction = process.env.NODE_ENV === "production";
     return {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        // Require secure/HTTPS in production, allow HTTP in local development
+        secure: isProduction,
+        // If not secure, sameSite MUST be 'lax' or 'strict' since 'none' requires secure
+        sameSite: isProduction ? "none" : "lax",
     };
 };
 
 // ── Register ────────────────────────────────────────────────────────────────
 const registerUser = async (req, res) => {
-  const { name, email, phone, address, password, profileImageUrl, profileImageId } = req.body;
+  const { name, email, phone, address, password, profileImageUrl, profileImageId, profileImage } = req.body;
   try {
     const existingUser = await UserModel.findOne({
       $or: [{ email }, { phone }]
@@ -26,6 +29,10 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const profileImageData = {};
+    
+    // Support both ways (object or flat fields)
+    if (profileImage && profileImage.url) profileImageData.url = profileImage.url;
+    if (profileImage && profileImage.imageId) profileImageData.imageId = profileImage.imageId;
     if (profileImageUrl) profileImageData.url = profileImageUrl;
     if (profileImageId) profileImageData.imageId = profileImageId;
 
@@ -112,6 +119,7 @@ const LoginUser = async (req, res) => {
 
         return res.status(200).json({
             message: "Login successful",
+            token: jwtToken,
             user: {
                 id: user._id,
                 name: user.name,
@@ -141,6 +149,49 @@ const LogoutUser = (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    try {
+        const { name, email, phone, address, profileImage } = req.body;
+        const userId = req.user.id;
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (phone) user.phone = phone;
+        if (address) user.address = address;
+        if (profileImage && profileImage.url) {
+            user.profileImage = {
+                url: profileImage.url,
+                imageId: profileImage.imageId
+            };
+        }
+
+        await user.save();
+
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                role: user.role,
+                profileImage: user.profileImage
+            }
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error updating profile",
+            error: err.message
+        });
+    }
+};
+
 const getMe = async (req, res) => {
     try {
         const user = await UserModel.findById(req.user.id);
@@ -162,4 +213,4 @@ const getMe = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, LoginUser, LogoutUser, getMe };
+module.exports = { registerUser, LoginUser, LogoutUser, getMe, updateProfile };

@@ -607,6 +607,64 @@ const getRevenueEstimateHistory = async (req, res) => {
     }
 };
 
+const updateMarketDemand = async (req, res) => {
+    try {
+        const payload = normalizeBody(req.body);
+        if (!payload) {
+            return res.status(400).json({ message: 'Request body is missing.' });
+        }
+
+        const { id } = req.params;
+        const { crop, region, demandLevel, season, quantity, quantityUnit, price, imageUrl } = payload;
+
+        const updateData = {};
+        if (crop) updateData.crop = crop;
+        if (region) updateData.region = region;
+        if (demandLevel) updateData.demandLevel = demandLevel;
+        if (season) updateData.season = season;
+        if (quantity != null) {
+            const parsedQty = Number(quantity);
+            if (!Number.isNaN(parsedQty) && parsedQty > 0) updateData.quantity = parsedQty;
+        }
+        if (quantityUnit) {
+            const normalizedUnit = String(quantityUnit).toLowerCase();
+            if (QUANTITY_UNITS.includes(normalizedUnit)) updateData.quantityUnit = normalizedUnit;
+        }
+        if (price != null) {
+            const parsedPrice = Number(price);
+            if (!Number.isNaN(parsedPrice) && parsedPrice > 0) updateData.price = parsedPrice;
+        }
+        if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+
+        const updatedDemand = await MarketDemandModel.findByIdAndUpdate(id, updateData, { new: true });
+        
+        if (!updatedDemand) {
+            return res.status(404).json({ message: 'Market demand not found' });
+        }
+
+        res.status(200).json({ message: 'Market demand updated successfully', demand: updatedDemand });
+    } catch (error) {
+        console.error('Update Market Demand Error:', error.message);
+        res.status(500).json({ message: 'Error updating market demand entry', error: error.message });
+    }
+};
+
+const deleteMarketDemand = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedDemand = await MarketDemandModel.findByIdAndDelete(id);
+        
+        if (!deletedDemand) {
+            return res.status(404).json({ message: 'Market demand not found' });
+        }
+
+        res.status(200).json({ message: 'Market demand deleted successfully' });
+    } catch (error) {
+        console.error('Delete Market Demand Error:', error.message);
+        res.status(500).json({ message: 'Error deleting market demand entry', error: error.message });
+    }
+};
+
 module.exports = {
     MarketDemand,
     getMarketDemands,
@@ -615,4 +673,6 @@ module.exports = {
     estimateRevenue,
     saveRevenueEstimate,
     getRevenueEstimateHistory,
+    updateMarketDemand,
+    deleteMarketDemand,
 };
