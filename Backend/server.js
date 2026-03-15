@@ -24,6 +24,10 @@ if (process.env.VERCEL) {
     app.listen(PORT, HOST, () => {
       console.log(`Server is running on http://${HOST}:${PORT}`);
     });
+  }).catch((err) => {
+    console.error("❌ Failed to start server:", err);
+    process.exit(1);
   });
+
 }
 
