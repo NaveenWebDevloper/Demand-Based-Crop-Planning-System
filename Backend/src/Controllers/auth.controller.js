@@ -53,11 +53,21 @@ const registerUser = async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Registration Error:", err);
+
+    // Handle MongoDB duplicate key error (E11000)
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      return res.status(400).json({
+        message: `User with this ${field} already exists. Please use a different ${field}.`,
+      });
+    }
+
     return res.status(500).json({
       message: "Error occurred while registering user",
       error: err.message
     });
   }
+
 };
 
 // ── Login ───────────────────────────────────────────────────────────────────
