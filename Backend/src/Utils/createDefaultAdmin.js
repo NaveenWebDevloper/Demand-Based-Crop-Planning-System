@@ -10,7 +10,7 @@ const createDefaultAdmin = async () => {
 
     if (admin) {
       // Update existing admin if needed
-      admin.name = "System Admin";
+      admin.name = "Naveen";
       admin.email = adminEmail;
       admin.status = "approved";
       await admin.save();
@@ -18,10 +18,10 @@ const createDefaultAdmin = async () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || "Admin@123", 10);
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || "naveen", 10);
 
     await UserModel.create({
-      name: "System Admin",
+      name: "Naveen",
       email: adminEmail,
       phone: adminPhone,
       address: "System Headquarters",
