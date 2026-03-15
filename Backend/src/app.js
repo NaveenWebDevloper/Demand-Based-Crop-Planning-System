@@ -25,6 +25,8 @@ const configuredOrigins = [
 const lanOriginPattern = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/;
 const localhostPattern = /^https?:\/\/((localhost)|(127\.0\.0\.1))(\:\d+)?$/i;
 const vercelOriginPattern = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
+const renderOriginPattern = /^https:\/\/[a-z0-9-]+\.onrender\.com$/i;
+
 
 // During development, allow all origins and echo the request Origin (helps local dev servers).
 if (process.env.NODE_ENV !== 'production') {
@@ -33,7 +35,7 @@ if (process.env.NODE_ENV !== 'production') {
     app.use(cors({
         origin: (origin, callback) => {
             if (!origin) return callback(null, true);
-            if (configuredOrigins.includes(origin) || lanOriginPattern.test(origin) || localhostPattern.test(origin) || vercelOriginPattern.test(origin)) {
+            if (configuredOrigins.includes(origin) || lanOriginPattern.test(origin) || localhostPattern.test(origin) || vercelOriginPattern.test(origin) || renderOriginPattern.test(origin)) {
                 return callback(null, true);
             }
 
