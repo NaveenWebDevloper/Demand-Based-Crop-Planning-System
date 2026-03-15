@@ -352,12 +352,12 @@ const HomePageContent = () => {
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 relative z-30 -mt-10 md:-mt-20">
           <ScrollReveal yOffset={30} threshold={0.1}>
             <div className="flex flex-col items-center">
-               {/* Desktop Only Titles (now in flow) */}
-               <div className="hidden md:block text-center mb-10">
-                  <h1 className="text-5xl lg:text-6xl font-black text-slate-800 tracking-tight mb-4">
+               {/* Main Titles (Optimized for both Mobile & Desktop) */}
+               <div className="text-center mb-6 md:mb-10 w-full">
+                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-slate-800 tracking-tight mb-3 md:mb-4 px-2">
                     {t("home.title")}
                   </h1>
-                  <h2 className="text-2xl font-bold text-emerald-600">
+                  <h2 className="text-lg md:text-2xl font-bold text-emerald-600 px-4">
                     {t("home.subtitle")}
                   </h2>
                </div>
