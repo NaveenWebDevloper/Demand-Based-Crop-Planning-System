@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CropPlan Mobile",
-    "slug": "cropplan-mobile",
+    "slug": "demand-based-crop-planning-system",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,16 +15,31 @@
       "**/*"
     ],
     "ios": {
-      "supportsAdaptivity": true
+      "bundleIdentifier": "com.naveen.cropplan"
     },
     "android": {
+      "package": "com.naveen.cropplan",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0b2be5ff-7f5e-4c0a-a4d1-b0c43c4e6e87"
+      }
+    },
+    "owner": "naveenvadlas-organization"
   }
 }

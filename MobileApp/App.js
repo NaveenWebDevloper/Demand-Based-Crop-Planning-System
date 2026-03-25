@@ -15,6 +15,8 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import AdminDashboardScreen from './src/screens/AdminDashboardScreen';
 import AboutUsScreen from './src/screens/AboutUsScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
+import CropRecommendationScreen from './src/screens/CropRecommendationScreen';
+import HelpDeskScreen from './src/screens/HelpDeskScreen';
 
 // Components & Context
 import CustomTabBar from './src/components/CustomTabBar';
@@ -81,6 +83,8 @@ export default function App() {
           {/* Modals & Sub-pages */}
           <Stack.Screen name="RevenueEstimator" component={RevenueEstimatorScreen} />
           <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="CropRecommendation" component={CropRecommendationScreen} />
+          <Stack.Screen name="HelpDesk" component={HelpDeskScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </LanguageProvider>

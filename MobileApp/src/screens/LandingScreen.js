@@ -180,7 +180,7 @@ const LandingScreen = ({ navigation }) => {
                       
                       <View style={styles.weatherDetails}>
                         <View style={styles.weatherDetCol}>
-                          <Cloud Rain size={14} color="#3B82F6" />
+                          <CloudRain size={14} color="#3B82F6" />
                           <Text style={styles.weatherDetVal}>{weatherData.humidity}%</Text>
                           <Text style={styles.weatherDetLab}>Humidity</Text>
                         </View>

@@ -12,13 +12,12 @@ import {
   Image,
   Dimensions,
   Animated,
-  TextInput,
   StatusBar,
   Platform
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import { MapPin, TrendingUp, Info, RefreshCw, ChevronRight, User, Pencil } from 'lucide-react-native';
+import { MapPin, TrendingUp, Info, RefreshCw, ChevronRight, User, Pencil, Sprout, MessageSquare } from 'lucide-react-native';
 import api from '../api/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { THEME } from '../styles/theme';
@@ -32,18 +31,29 @@ const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
   const scrollX = useRef(new Animated.Value(0)).current;
   const { t } = useLanguage();
 
   const fetchData = async () => {
     try {
-      const [userRes, demandsRes] = await Promise.all([
-        AsyncStorage.getItem('user'),
-        api.get('/api/market/demand')
-      ]);
+      const userRes = await AsyncStorage.getItem('user');
+      const parsedUser = userRes ? JSON.parse(userRes) : null;
+      if (parsedUser) setUser(parsedUser);
 
-      if (userRes) setUser(JSON.parse(userRes));
+      const [demandsRes] = await Promise.all([
+        api.get('/api/market/demand'),
+      ]);
       setDemands(demandsRes.data.demands || []);
+
+      // Fetch AI recommendations in background
+      if (parsedUser?.id || parsedUser?._id) {
+        const userId = parsedUser.id || parsedUser._id;
+        try {
+          const recRes = await api.get(`/api/recommendation/${userId}`);
+          setRecommendations((recRes.data.recommendations || []).slice(0, 2));
+        } catch (_) {}
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -188,6 +198,54 @@ const HomeScreen = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
+
+          {/* AI Recommendations Section */}
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <TrendingUp size={18} color={THEME.colors.primary} />
+              <Text style={styles.sectionTitle}>AI Recommendations</Text>
+            </View>
+            <TouchableOpacity onPress={() => navigation.navigate('CropRecommendation')}>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
+          </View>
+
+          {recommendations.length > 0 ? (
+            <View style={styles.recPreviewContainer}>
+              {recommendations.map((rec, i) => (
+                <TouchableOpacity
+                  key={rec.crop_name}
+                  style={styles.recPreviewCard}
+                  onPress={() => navigation.navigate('CropRecommendation')}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.recPreviewIcon, i === 0 && styles.recPreviewIconPrimary]}>
+                    <Sprout size={18} color={i === 0 ? THEME.colors.primary : '#64748B'} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.recPreviewCrop}>{rec.crop_name}</Text>
+                    <View style={styles.recPreviewBarRow}>
+                      <View style={styles.recPreviewTrack}>
+                        <View style={[styles.recPreviewFill, { width: `${rec.score}%` }]} />
+                      </View>
+                      <Text style={styles.recPreviewScore}>{rec.score}%</Text>
+                    </View>
+                  </View>
+                  <ChevronRight size={16} color="#CBD5E1" />
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.recEmptyCard}
+              onPress={() => navigation.navigate('CropRecommendation')}
+            >
+              <Sprout size={22} color="#CBD5E1" />
+              <Text style={styles.recEmptyText}>Tap to get AI crop recommendations</Text>
+              <ChevronRight size={16} color="#CBD5E1" />
+            </TouchableOpacity>
+          )}
+
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t('marketDemands')}</Text>
             <Text style={styles.sectionSubtitle}>{t('noDemandsFound').replace('No market demands found.', 'Swipe to explore available crop demands')}</Text>
@@ -214,6 +272,21 @@ const HomeScreen = ({ navigation }) => {
 
           <View style={{ height: 120 }} />
         </ScrollView>
+
+        {/* Floating Chatbot FAB */}
+        <TouchableOpacity 
+          style={styles.fab} 
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('HelpDesk')}
+        >
+          <LinearGradient
+            colors={[THEME.colors.primary, THEME.colors.primaryDark]}
+            style={styles.fabGradient}
+          >
+            <MessageSquare color="white" size={26} />
+            <View style={styles.fabBadge} />
+          </LinearGradient>
+        </TouchableOpacity>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -262,9 +335,24 @@ const styles = StyleSheet.create({
   summaryLabel: { fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: 0.5 },
   summaryValue: { fontSize: 36, fontWeight: '900', color: 'white', marginTop: 2 },
 
-  sectionHeader: { paddingHorizontal: 25, marginTop: 10, marginBottom: 20 },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: THEME.colors.title },
-  sectionSubtitle: { fontSize: 14, color: THEME.colors.body, marginTop: 4 },
+  sectionHeader: { paddingHorizontal: 25, marginTop: 10, marginBottom: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: THEME.colors.title },
+  sectionSubtitle: { fontSize: 13, color: THEME.colors.body, marginTop: 2 },
+  viewAllText: { fontSize: 13, fontWeight: '700', color: THEME.colors.primary, paddingHorizontal: 25 },
+
+  // AI Recommendations preview
+  recPreviewContainer: { marginHorizontal: 25, marginBottom: 20, gap: 10 },
+  recPreviewCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'white', borderRadius: 18, padding: 14, borderWidth: 1, borderColor: '#F1F5F9', elevation: 2 },
+  recPreviewIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#F8FAFC', justifyContent: 'center', alignItems: 'center' },
+  recPreviewIconPrimary: { backgroundColor: 'rgba(16,185,129,0.1)' },
+  recPreviewCrop: { fontSize: 15, fontWeight: '700', color: THEME.colors.title, marginBottom: 4 },
+  recPreviewBarRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  recPreviewTrack: { flex: 1, height: 5, backgroundColor: '#E2E8F0', borderRadius: 3, overflow: 'hidden' },
+  recPreviewFill: { height: '100%', backgroundColor: THEME.colors.primary, borderRadius: 3 },
+  recPreviewScore: { fontSize: 11, fontWeight: '800', color: THEME.colors.primary },
+  recEmptyCard: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'white', borderRadius: 18, padding: 18, marginHorizontal: 25, marginBottom: 20, borderWidth: 1, borderColor: '#F1F5F9', borderStyle: 'dashed' },
+  recEmptyText: { flex: 1, fontSize: 14, color: '#94A3B8', fontWeight: '500' },
 
   carouselList: { paddingLeft: 25, paddingRight: 5 },
   cardContainer: { width: CARD_WIDTH, marginRight: 20 },
@@ -290,7 +378,40 @@ const styles = StyleSheet.create({
   estimateBtnText: { color: 'white', fontSize: 16, fontWeight: '700' },
 
   emptyBox: { width: width - 50, alignItems: 'center', padding: 40 },
-  emptyText: { color: THEME.colors.body, marginTop: 15, textAlign: 'center' }
+  emptyText: { color: THEME.colors.body, marginTop: 15, textAlign: 'center' },
+  
+  fab: {
+    position: 'absolute',
+    bottom: 100,
+    right: 30,
+    width: 65,
+    height: 65,
+    borderRadius: 33,
+    elevation: 10,
+    zIndex: 9999,
+    shadowColor: THEME.colors.primary,
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  fabGradient: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 33,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fabBadge: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#EF4444',
+    borderWidth: 2,
+    borderColor: 'white',
+  }
 });
 
 export default HomeScreen;

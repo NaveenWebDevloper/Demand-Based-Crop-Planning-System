@@ -2,6 +2,7 @@ require("dotenv").config();
 const app = require("./src/app");
 const connectDB = require("./src/DB/db");
 const createDefaultAdmin = require("./src/Utils/createDefaultAdmin");
+require("./src/Services/market.service");
 
 // Connect to MongoDB and create default admin
 const startServer = async () => {

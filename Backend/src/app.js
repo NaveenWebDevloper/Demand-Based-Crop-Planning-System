@@ -4,6 +4,10 @@ const adminRoutes = require('./Routes/admin.Routes');
 const marketDemandRoutes = require('./Routes/Marketdemand.Routes');
 const imageRoutes = require('./Routes/image.Routes');
 const weatherRoutes = require('./Routes/weather.Routes');
+const recommendationRoutes = require('./Routes/recommendation.Routes');
+const heatmapRoutes = require('./Routes/heatmap.Routes');
+const aiRoutes = require('./Routes/ai.Routes');
+
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
@@ -55,5 +59,11 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/market', marketDemandRoutes);
 app.use('/api/image', imageRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/recommendation', recommendationRoutes);
+app.use('/api/heatmap', heatmapRoutes);
+app.use('/api/ai', aiRoutes);
+app.get('/api/test', (req, res) => res.json({ message: "API is working" }));
+
+
 
 module.exports = app;

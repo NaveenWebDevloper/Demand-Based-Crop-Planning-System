@@ -15,6 +15,10 @@ import {
 import { Card, CardContent } from "../Components/ui/card";
 import ScrollReveal from "../Components/ScrollReveal";
 import { UserPen } from "lucide-react";
+import CropRecommendationSection from "../Components/CropRecommendationSection";
+import DemandHeatmap from "../Components/DemandHeatmap";
+import HelpDesk from "../Components/HelpDesk";
+
 
 const FarmerDashboard = () => {
   const [marketDemands, setMarketDemands] = useState([]);
@@ -181,6 +185,10 @@ const FarmerDashboard = () => {
               </button>
             </div>
           </div>
+          
+          <div className="mb-8">
+            <CropRecommendationSection />
+          </div>
 
           {/* Market Demand View */}
           <div className="glass-card rounded-2xl px-2 py-6 md:p-8 mb-8">
@@ -301,6 +309,12 @@ const FarmerDashboard = () => {
             </ScrollReveal>
           )}
           </div>
+
+          <div className="mb-8">
+            <DemandHeatmap />
+          </div>
+          
+          <HelpDesk />
         </div>
       </div>
     </>

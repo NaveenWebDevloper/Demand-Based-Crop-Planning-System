@@ -28,6 +28,17 @@ const ProfilePage = () => {
         email: user.email || "",
         phone: user.phone || "",
         address: user.address || "",
+        state: user.state || "",
+        district: user.district || "",
+        village: user.village || "",
+        land_size_acres: user.land_size_acres || "",
+        soil_type: user.soil_type || "",
+        irrigation_type: user.irrigation_type || "rainfed",
+        water_availability: user.water_availability || "medium",
+        previous_crop: user.previous_crop || "",
+        sowing_season: user.sowing_season || "",
+        latitude: user.latitude || "",
+        longitude: user.longitude || "",
       });
       setPreviewImage(user.profileImage?.url);
     }
@@ -146,7 +157,7 @@ const ProfilePage = () => {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-gray-100">
                            <div className="space-y-2">
                              <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
                                <User size={14} /> Name
@@ -182,7 +193,7 @@ const ProfilePage = () => {
                            </div>
                            <div className="space-y-2">
                              <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
-                               <MapPin size={14} /> Mandle / Region
+                               <MapPin size={14} /> Region / Address
                              </label>
                              <input 
                                type="text" 
@@ -191,7 +202,106 @@ const ProfilePage = () => {
                                className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
                              />
                            </div>
-                        </div>
+                         </div>
+
+                         {/* Farm Details */}
+                         <div className="pt-4">
+                           <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                             <div className="w-1 h-5 bg-emerald-500 rounded-full"></div>
+                             Farm Conditions
+                           </h3>
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">State</label>
+                               <input 
+                                 type="text" 
+                                 value={formData.state}
+                                 onChange={(e) => setFormData({...formData, state: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                                 placeholder="e.g. Telangana"
+                               />
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">District</label>
+                               <input 
+                                 type="text" 
+                                 value={formData.district}
+                                 onChange={(e) => setFormData({...formData, district: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                                 placeholder="e.g. Medchal"
+                               />
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">Land Size (Acres)</label>
+                               <input 
+                                 type="number" 
+                                 value={formData.land_size_acres}
+                                 onChange={(e) => setFormData({...formData, land_size_acres: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                               />
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">Soil Type</label>
+                               <select 
+                                 value={formData.soil_type}
+                                 onChange={(e) => setFormData({...formData, soil_type: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                               >
+                                 <option value="">Select Soil Type</option>
+                                 <option value="Red Soil">Red Soil</option>
+                                 <option value="Black Soil">Black Soil</option>
+                                 <option value="Alluvial Soil">Alluvial Soil</option>
+                                 <option value="Laterite Soil">Laterite Soil</option>
+                               </select>
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">Irrigation Type</label>
+                               <select 
+                                 value={formData.irrigation_type}
+                                 onChange={(e) => setFormData({...formData, irrigation_type: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                               >
+                                 <option value="rainfed">Rainfed</option>
+                                 <option value="borewell">Borewell</option>
+                                 <option value="canal">Canal</option>
+                               </select>
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">Water Availability</label>
+                               <select 
+                                 value={formData.water_availability}
+                                 onChange={(e) => setFormData({...formData, water_availability: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                               >
+                                 <option value="low">Low</option>
+                                 <option value="medium">Medium</option>
+                                 <option value="high">High</option>
+                               </select>
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">Sowing Season</label>
+                               <select 
+                                 value={formData.sowing_season}
+                                 onChange={(e) => setFormData({...formData, sowing_season: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                               >
+                                 <option value="kharif">Kharif</option>
+                                 <option value="rabi">Rabi</option>
+                                 <option value="summer">Summer</option>
+                               </select>
+                             </div>
+                             <div className="space-y-2">
+                               <label className="text-xs font-bold text-gray-500 uppercase">Previous Crop</label>
+                               <input 
+                                 type="text" 
+                                 value={formData.previous_crop}
+                                 onChange={(e) => setFormData({...formData, previous_crop: e.target.value})}
+                                 className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                                 placeholder="e.g. Tomato"
+                               />
+                             </div>
+                           </div>
+                         </div>
 
                         <div className="flex items-center gap-4 pt-4">
                           <button 
@@ -229,10 +339,41 @@ const ProfilePage = () => {
                               <p className="text-xl font-semibold text-green-600 capitalize">{user?.role}</p>
                           </div>
                           <div className="md:col-span-2 space-y-1">
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.addressLabel")}</p>
-                              <p className="text-xl font-semibold text-slate-800 leading-relaxed">{user?.address}</p>
-                          </div>
-                      </div>
+                               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("farmer.addressLabel")}</p>
+                               <p className="text-xl font-semibold text-slate-800 leading-relaxed">{user?.address}</p>
+                           </div>
+                           
+                           {/* Farm Condition Summary */}
+                           <div className="md:col-span-2 pt-6 mt-6 border-t border-gray-100">
+                             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Farm Condition Summary</h3>
+                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                               <div className="bg-green-50/50 p-3 rounded-2xl border border-green-100">
+                                 <p className="text-[10px] text-green-600 font-bold uppercase">Land Size</p>
+                                 <p className="text-lg font-bold text-slate-800">{user?.land_size_acres || '--'} Acres</p>
+                               </div>
+                               <div className="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100">
+                                 <p className="text-[10px] text-emerald-600 font-bold uppercase">Soil Type</p>
+                                 <p className="text-lg font-bold text-slate-800">{user?.soil_type || '--'}</p>
+                               </div>
+                               <div className="bg-blue-50/50 p-3 rounded-2xl border border-blue-100">
+                                 <p className="text-[10px] text-blue-600 font-bold uppercase">Irrigation</p>
+                                 <p className="text-lg font-bold text-slate-800 capitalize">{user?.irrigation_type || '--'}</p>
+                               </div>
+                               <div className="bg-cyan-50/50 p-3 rounded-2xl border border-cyan-100">
+                                 <p className="text-[10px] text-cyan-600 font-bold uppercase">Water</p>
+                                 <p className="text-lg font-bold text-slate-800 capitalize">{user?.water_availability || '--'}</p>
+                               </div>
+                               <div className="bg-orange-50/50 p-3 rounded-2xl border border-orange-100">
+                                 <p className="text-[10px] text-orange-600 font-bold uppercase">Season</p>
+                                 <p className="text-lg font-bold text-slate-800 capitalize">{user?.sowing_season || '--'}</p>
+                               </div>
+                               <div className="bg-amber-50/50 p-3 rounded-2xl border border-amber-100">
+                                 <p className="text-[10px] text-amber-600 font-bold uppercase">Prev Crop</p>
+                                 <p className="text-lg font-bold text-slate-800 capitalize">{user?.previous_crop || '--'}</p>
+                               </div>
+                             </div>
+                           </div>
+                       </div>
                     )}
                 </div>
 

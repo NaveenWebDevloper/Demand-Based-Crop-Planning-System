@@ -127,7 +127,18 @@ const LoginUser = async (req, res) => {
                 phone: user.phone,
                 address: user.address,
                 role: user.role,
-                profileImage: user.profileImage
+                profileImage: user.profileImage,
+                state: user.state,
+                district: user.district,
+                village: user.village,
+                land_size_acres: user.land_size_acres,
+                soil_type: user.soil_type,
+                irrigation_type: user.irrigation_type,
+                water_availability: user.water_availability,
+                previous_crop: user.previous_crop,
+                sowing_season: user.sowing_season,
+                latitude: user.latitude,
+                longitude: user.longitude
             }
         });
 
@@ -151,7 +162,12 @@ const LogoutUser = (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const { name, email, phone, address, profileImage } = req.body;
+        const { 
+            name, email, phone, address, profileImage,
+            state, district, village, land_size_acres, soil_type,
+            irrigation_type, water_availability, previous_crop,
+            sowing_season, latitude, longitude
+        } = req.body;
         const userId = req.user.id;
 
         const user = await UserModel.findById(userId);
@@ -163,6 +179,20 @@ const updateProfile = async (req, res) => {
         if (email) user.email = email;
         if (phone) user.phone = phone;
         if (address) user.address = address;
+        
+        // Farm fields
+        if (state) user.state = state;
+        if (district) user.district = district;
+        if (village) user.village = village;
+        if (land_size_acres) user.land_size_acres = land_size_acres;
+        if (soil_type) user.soil_type = soil_type;
+        if (irrigation_type) user.irrigation_type = irrigation_type;
+        if (water_availability) user.water_availability = water_availability;
+        if (previous_crop) user.previous_crop = previous_crop;
+        if (sowing_season) user.sowing_season = sowing_season;
+        if (latitude) user.latitude = latitude;
+        if (longitude) user.longitude = longitude;
+
         if (profileImage && profileImage.url) {
             user.profileImage = {
                 url: profileImage.url,
@@ -181,7 +211,18 @@ const updateProfile = async (req, res) => {
                 phone: user.phone,
                 address: user.address,
                 role: user.role,
-                profileImage: user.profileImage
+                profileImage: user.profileImage,
+                state: user.state,
+                district: user.district,
+                village: user.village,
+                land_size_acres: user.land_size_acres,
+                soil_type: user.soil_type,
+                irrigation_type: user.irrigation_type,
+                water_availability: user.water_availability,
+                previous_crop: user.previous_crop,
+                sowing_season: user.sowing_season,
+                latitude: user.latitude,
+                longitude: user.longitude
             }
         });
     } catch (err) {
@@ -205,7 +246,18 @@ const getMe = async (req, res) => {
                 phone: user.phone,
                 address: user.address,
                 role: user.role,
-                profileImage: user.profileImage
+                profileImage: user.profileImage,
+                state: user.state,
+                district: user.district,
+                village: user.village,
+                land_size_acres: user.land_size_acres,
+                soil_type: user.soil_type,
+                irrigation_type: user.irrigation_type,
+                water_availability: user.water_availability,
+                previous_crop: user.previous_crop,
+                sowing_season: user.sowing_season,
+                latitude: user.latitude,
+                longitude: user.longitude
             }
         });
     } catch (err) {

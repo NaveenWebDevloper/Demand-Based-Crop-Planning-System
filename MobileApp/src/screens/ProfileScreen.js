@@ -15,7 +15,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User, Mail, Phone, MapPin, LogOut, ChevronRight, ShieldCheck, Pencil } from 'lucide-react-native';
+import { User, Mail, Phone, MapPin, LogOut, ChevronRight, ShieldCheck, Pencil, HelpCircle } from 'lucide-react-native';
 import { THEME } from '../styles/theme';
 import { useLanguage } from '../context/LanguageContext';
 import { useFocusEffect } from '@react-navigation/native';
@@ -139,6 +139,16 @@ const ProfileScreen = ({ navigation }) => {
               </View>
             </View>
 
+            {/* Help & Support */}
+            <TouchableOpacity
+              style={styles.helpBtn}
+              onPress={() => navigation.navigate('HelpDesk')}
+            >
+              <HelpCircle size={20} color={THEME.colors.primary} />
+              <Text style={styles.helpText}>Help & Support</Text>
+              <ChevronRight size={16} color={THEME.colors.primary} />
+            </TouchableOpacity>
+
             {/* Logout Button */}
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
               {LogOut ? <LogOut size={20} color="#EF4444" /> : <View />}
@@ -198,8 +208,11 @@ const styles = StyleSheet.create({
   pulseDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: THEME.colors.primary },
   statusPillText: { fontSize: 12, fontWeight: '800', color: '#15803D' },
 
-  logoutBtn: { width: '100%', backgroundColor: 'rgba(239, 68, 68, 0.05)', paddingVertical: 18, borderRadius: 24, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 30, borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.1)' },
-  logoutText: { color: '#EF4444', fontSize: 16, fontWeight: '800' }
+  logoutBtn: { width: '100%', backgroundColor: 'rgba(239, 68, 68, 0.05)', paddingVertical: 18, borderRadius: 24, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 12, borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.1)' },
+  logoutText: { color: '#EF4444', fontSize: 16, fontWeight: '800' },
+
+  helpBtn: { width: '100%', backgroundColor: 'rgba(16,185,129,0.05)', paddingVertical: 18, borderRadius: 24, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 20, borderWidth: 1, borderColor: 'rgba(16,185,129,0.15)' },
+  helpText: { color: THEME.colors.primary, fontSize: 16, fontWeight: '800', flex: 1, textAlign: 'center' },
 });
 
 export default ProfileScreen;

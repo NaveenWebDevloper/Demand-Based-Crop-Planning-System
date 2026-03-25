@@ -41,3 +41,36 @@ Thumbs.db
 # =====================
 logs/
 *.log
+
+# =====================
+# Expo / Mobile
+# =====================
+.expo/
+*.jks
+*.p12
+*.key
+*.mobileprovision
+/MobileApp/android/
+/MobileApp/ios/
+
+# =====================
+# Python / AI-Service
+# =====================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# =====================
+# Vercel
+# =====================
+.vercel

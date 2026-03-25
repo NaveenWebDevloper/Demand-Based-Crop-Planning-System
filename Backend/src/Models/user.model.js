@@ -55,7 +55,28 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null
     }
-  }
+  },
+
+  // Farm Conditions
+  state: { type: String },
+  district: { type: String },
+  village: { type: String },
+  land_size_acres: { type: Number },
+  soil_type: { type: String },
+  irrigation_type: { 
+    type: String, 
+    enum: ["rainfed", "borewell", "canal"],
+    default: "rainfed"
+  },
+  water_availability: { 
+    type: String, 
+    enum: ["low", "medium", "high"],
+    default: "medium"
+  },
+  previous_crop: { type: String },
+  sowing_season: { type: String },
+  latitude: { type: Number },
+  longitude: { type: Number }
 
 },
 {

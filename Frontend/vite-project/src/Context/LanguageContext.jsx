@@ -212,6 +212,17 @@ const translations = {
       regionLabel: "Region",
       estimateRevenue: "Estimate Revenue for This Crop",
     },
+    helpDesk: {
+      title: "Help Desk",
+      subtitle: "How can we help you today?",
+      home: "Back to Home",
+      selectTopic: "Select a Topic",
+      askSomething: "Ask me something else...",
+      quote: "Our system uses real-time government data and AI forecasting to give you the most accurate planning advice.",
+      planning: { title: "Crop Planning", desc: "Get advice on what to plant and when." },
+      future: { title: "Future Prices", desc: "Forecasts for upcoming harvest seasons." },
+      current: { title: "Current Prices", desc: "Live market rates and demand info." }
+    },
   },
   te: {
     nav: {
@@ -422,6 +433,17 @@ const translations = {
       regionLabel: "ప్రాంతం",
       estimateRevenue: "ఈ పంట కోసం రెవెన్యూ అంచనా",
     },
+    helpDesk: {
+      title: "సహాయ కేంద్రం",
+      subtitle: "ఈరోజు మేము మీకు ఎలా సహాయపడగలము?",
+      home: "హోమ్ కి తిరిగి వెళ్ళండి",
+      selectTopic: "ఒక అంశాన్ని ఎంచుకోండి",
+      askSomething: "మరేదైనా అడగండి...",
+      quote: "అత్యంత ఖచ్చితమైన ప్రణాళికా సలహాలను అందించడానికి మా సిస్టమ్ రియల్ టైమ్ ప్రభుత్వ డేటా మరియు AI అంచనాలను ఉపయోగిస్తుంది.",
+      planning: { title: "పంట ప్రణాళిక", desc: "ఏమి నాటాలి మరియు ఎప్పుడు నాటాలి అనే దానిపై సలహా పొందండి." },
+      future: { title: "భవిష్యత్తు ధరలు", desc: "రాబోయే పంట కోత సీజన్ల అంచనాలు." },
+      current: { title: "ప్రస్తుత ధరలు", desc: "లైవ్ మార్కెట్ రేట్లు మరియు డిమాండ్ సమాచారం." }
+    },
   },
   hi: {
     nav: {
@@ -631,6 +653,17 @@ const translations = {
       pricePerUnit: "प्रति इकाई मूल्य",
       regionLabel: "क्षेत्र",
       estimateRevenue: "इस फसल के लिए राजस्व का अनुमान लगाएं",
+    },
+    helpDesk: {
+      title: "सहायता डेस्क",
+      subtitle: "आज हम आपकी कैसे मदद कर सकते हैं?",
+      home: "होम पर वापस जाएं",
+      selectTopic: "एक विषय चुनें",
+      askSomething: "मुझसे कुछ और पूछें...",
+      quote: "हमारा सिस्टम आपको सबसे सटीक योजना सलाह देने के लिए रीयल-टाइम सरकारी डेटा और एआई पूर्वानुमान का उपयोग करता है।",
+      planning: { title: "फसल योजना", desc: "क्या और कब बोना है, इस पर सलाह लें।" },
+      future: { title: "भविष्य की कीमतें", desc: "आगामी फसल कटाई के मौसम के लिए पूर्वानुमान।" },
+      current: { title: "वर्तमान कीमतें", desc: "लाइव बाजार दरें और मांग की जानकारी।" }
     },
   },
 };

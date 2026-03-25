@@ -14,6 +14,8 @@ const verifyToken = (req, res, next) => {
     
     if (!token) {
         console.log("❌ No token found in request to:", req.originalUrl);
+        console.log("Current Cookies:", req.cookies);
+
         return res.status(401).json({
             message: "Access denied. Authentication token is missing."
         });

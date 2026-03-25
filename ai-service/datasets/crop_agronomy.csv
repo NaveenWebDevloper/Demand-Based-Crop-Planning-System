@@ -1,0 +1,6 @@
+"_id","crop_name","season","water_requirement","avg_yield_per_acre","growth_duration_days","supported_soil_types","temperature_range","rainfall_requirement","market_price_base","__v","createdAt","updatedAt"
+"69b84fc23b460b0f9e71f0a5","Groundnut","Kharif","medium",800,110,"[""Red Soil"",""Alluvial Soil""]","{""min"":20,""max"":30}","{""min"":500,""max"":1000}",55,0,"2026-03-16T18:45:22.650Z","2026-03-16T18:45:22.650Z"
+"69b84fc23b460b0f9e71f0a6","Cotton","Kharif","medium",1000,160,"[""Black Soil"",""Alluvial Soil""]","{""min"":21,""max"":30}","{""min"":600,""max"":1200}",60,0,"2026-03-16T18:45:22.652Z","2026-03-16T18:45:22.652Z"
+"69b84fc23b460b0f9e71f0a8","Maize","Kharif","medium",2500,100,"[""Red Soil"",""Black Soil"",""Alluvial Soil""]","{""min"":18,""max"":27}","{""min"":600,""max"":1100}",18,0,"2026-03-16T18:45:22.652Z","2026-03-16T18:45:22.652Z"
+"69b84fc23b460b0f9e71f0a9","Millet","Kharif","low",600,90,"[""Red Soil"",""Laterite Soil""]","{""min"":25,""max"":35}","{""min"":400,""max"":600}",30,0,"2026-03-16T18:45:22.652Z","2026-03-16T18:45:22.652Z"
+"69b84fc23b460b0f9e71f0a7","Rice (Paddy)","Kharif","high",1800,120,"[""Alluvial Soil"",""Clay Soil""]","{""min"":20,""max"":35}","{""min"":1500,""max"":2500}",22,0,"2026-03-16T18:45:22.652Z","2026-03-16T18:45:22.652Z"
