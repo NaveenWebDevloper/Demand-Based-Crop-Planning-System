@@ -11,7 +11,7 @@ import ProfilePage from "./Pages/ProfilePage";
 import { AuthProvider } from "./Context/AuthContext";
 import { LanguageProvider } from "./Context/LanguageContext";
 import ProtectedRoute from "./Components/ProtectedRoute";
-import { Analytics } from "@vercel/analytics/react";
+
 
 const App = () => {
   return (
@@ -59,7 +59,7 @@ const App = () => {
               }
             />
           </Routes>
-          <Analytics />
+
         </AuthProvider>
       </BrowserRouter>
     </LanguageProvider>
