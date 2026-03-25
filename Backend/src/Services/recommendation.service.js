@@ -101,7 +101,8 @@ const calculateRecommendation = async (farmerId) => {
                         modal_price: Math.round(marketData.price_modal),
                         arrival: Math.round(marketData.arrival_quantity),
                         state: marketData.state,
-                        date: marketData.date
+                        date: marketData.date,
+                        dataSourceStatus: "Live Mandi Data"
                     } : null
                 };
             }));

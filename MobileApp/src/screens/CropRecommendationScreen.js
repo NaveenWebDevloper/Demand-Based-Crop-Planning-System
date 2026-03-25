@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TrendingUp, Droplets, AlertTriangle, Sprout, X, ChevronRight, IndianRupee, RefreshCw } from 'lucide-react-native';
+import { TrendingUp, Droplets, AlertTriangle, Sprout, X, ChevronRight, IndianRupee, RefreshCw, MapPin, Calendar } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../api/config';
 import { THEME } from '../styles/theme';
@@ -222,6 +222,29 @@ const CropRecommendationScreen = ({ navigation }) => {
                   </View>
                 </View>
 
+                {rec.live_market && (
+                  <View style={styles.marketInfoBox}>
+                    <View style={styles.marketTitleRow}>
+                      <View style={styles.marketStatusBadge}>
+                        <View style={styles.marketStatusDot} />
+                        <Text style={styles.marketStatusText}>OFFICIAL GOVT DATA</Text>
+                      </View>
+                      <Text style={styles.marketArrivalText}>Arrival: {rec.live_market.arrival?.toLocaleString()} qtl</Text>
+                    </View>
+                    
+                    <View style={styles.marketDetailsRow}>
+                      <View style={styles.marketDetailItem}>
+                        <MapPin size={14} color={THEME.colors.primary} />
+                        <Text style={styles.marketDetailValue}>{rec.live_market.market_name}, {rec.live_market.state}</Text>
+                      </View>
+                      <View style={styles.marketDetailItem}>
+                        <Calendar size={14} color="#94A3B8" />
+                        <Text style={styles.marketDetailLabel}>{new Date(rec.live_market.date).toLocaleDateString()}</Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+
                 <TouchableOpacity
                   style={styles.forecastBtn}
                   onPress={() => fetchForecast(rec.crop_name)}
@@ -372,6 +395,71 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8,
   },
   forecastBtnText: { color: 'white', fontSize: 15, fontWeight: '700' },
+
+  // Market Info Box
+  marketInfoBox: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 16,
+    padding: 12,
+    marginTop: 15,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  marketTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EDF2F7',
+    paddingBottom: 8,
+  },
+  marketStatusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    gap: 5,
+  },
+  marketStatusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: THEME.colors.primary,
+  },
+  marketStatusText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: THEME.colors.primary,
+    letterSpacing: 0.5,
+  },
+  marketArrivalText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  marketDetailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  marketDetailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  marketDetailValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: THEME.colors.title,
+  },
+  marketDetailLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#94A3B8',
+  },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

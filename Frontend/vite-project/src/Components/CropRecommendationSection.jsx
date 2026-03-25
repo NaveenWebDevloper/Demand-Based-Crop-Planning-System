@@ -4,7 +4,7 @@ import { apiUrl } from "../config/api";
 import { useAuth } from "../Context/AuthContext";
 import { useLanguage } from "../Context/LanguageContext";
 import { Card, CardContent } from "./ui/card";
-import { Loader2, TrendingUp, Droplets, AlertTriangle, IndianRupee, Sprout, X } from "lucide-react";
+import { Loader2, TrendingUp, Droplets, AlertTriangle, IndianRupee, Sprout, X, MapPin, Calendar } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -163,7 +163,7 @@ const CropRecommendationSection = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-8">
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
                                         <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
                                             <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase mb-1">
                                                 <IndianRupee size={10} /> Market Price
@@ -183,8 +183,8 @@ const CropRecommendationSection = () => {
                                                 </div>
                                             </div>
                                             {rec.live_market ? (
-                                                 <p className="text-sm font-bold text-slate-700">
-                                                     ₹{rec.live_market.min_price} <span className="text-slate-400 font-normal">to</span> ₹{rec.live_market.max_price}
+                                                 <p className="text-[11px] font-bold text-slate-700">
+                                                     ₹{rec.live_market.min_price} <span className="text-slate-400 font-normal">-</span> ₹{rec.live_market.max_price}
                                                 </p>
                                             ) : (
                                                 <p className="text-sm font-black text-slate-500">N/A</p>
@@ -194,24 +194,46 @@ const CropRecommendationSection = () => {
                                             <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase mb-1">
                                                 <Droplets size={10} /> Water Req.
                                             </div>
-                                            <p className="text-sm font-black text-slate-800">{rec.water_requirement}</p>
+                                            <p className="text-sm font-black text-slate-800 uppercase">{rec.water_requirement}</p>
                                         </div>
                                         <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
                                             <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase mb-1">
                                                 <AlertTriangle size={10} /> Oversupply Risk
                                             </div>
-                                            <p className={`text-md font-black ${rec.risk === 'Low' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                            <p className={`text-sm font-black uppercase ${rec.risk === 'Low' ? 'text-emerald-600' : 'text-rose-600'}`}>
                                                 {rec.risk}
                                             </p>
                                         </div>
                                     </div>
 
+                                    {rec.live_market && (
+                                        <div className="mb-6 p-4 bg-slate-50/80 rounded-2xl border border-slate-100/50 backdrop-blur-sm">
+                                            <div className="flex items-center justify-between mb-3 border-b border-slate-200/50 pb-2">
+                                                <div className="flex items-center gap-2 bg-emerald-100/50 px-2 py-1 rounded-md">
+                                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                                    <span className="text-[9px] font-black text-emerald-700 tracking-wider">OFFICIAL GOVT DATA</span>
+                                                </div>
+                                                <span className="text-[10px] font-bold text-slate-400">Arrivals: {rec.live_market.arrival?.toLocaleString()} qtl</span>
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2 text-slate-700">
+                                                    <MapPin size={14} className="text-green-600" />
+                                                    <span className="text-xs font-bold truncate">{rec.live_market.market_name}, {rec.live_market.state}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-slate-400">
+                                                    <Calendar size={14} />
+                                                    <span className="text-[10px] font-medium">{new Date(rec.live_market.date).toLocaleDateString()}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <button 
                                         onClick={() => fetchForecast(rec.crop_name)}
-                                        className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2"
+                                        className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2 group/btn"
                                     >
-                                        View Detailed Plan
-                                        <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">→</span>
+                                        View Future Price Forecast
+                                        <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                     </button>
                                 </CardContent>
                             </Card>
