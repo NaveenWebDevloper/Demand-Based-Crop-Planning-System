@@ -4,7 +4,7 @@ import { apiUrl } from "../config/api";
 import { useAuth } from "../Context/AuthContext";
 import { useLanguage } from "../Context/LanguageContext";
 import { Card, CardContent } from "./ui/card";
-import { Loader2, TrendingUp, Droplets, AlertTriangle, IndianRupee, Sprout, X, MapPin, Calendar } from "lucide-react";
+import { Loader2, TrendingUp, Droplets, AlertTriangle, IndianRupee, Sprout, X, MapPin, Calendar, ChevronRight } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
