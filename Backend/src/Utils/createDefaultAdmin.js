@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 const createDefaultAdmin = async () => {
   try {
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@cropplan.com";
+    const adminEmail = process.env.ADMIN_EMAIL || "23uj1a6648@mrem.ac.in";
     const adminPhone = "0000000000";
     
     let admin = await UserModel.findOne({ role: "admin" });
@@ -13,6 +13,12 @@ const createDefaultAdmin = async () => {
       admin.name = "Naveen";
       admin.email = adminEmail;
       admin.status = "approved";
+      
+      // Update password if it's provided
+      const adminPassword = process.env.ADMIN_PASSWORD || "naveen";
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      admin.password = hashedPassword;
+
       await admin.save();
       console.log("Default admin updated successfully");
       return;
